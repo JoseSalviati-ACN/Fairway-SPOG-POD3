@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pod 3 — COE/Wave SPOG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0b0e14;
+    --surface:   #111520;
+    --surface2:  #181d2a;
+    --border:    #232a3a;
+    --border2:   #2e3852;
+    --text:      #e8ecf4;
+    --muted:     #7a8499;
+    --accent:    #4f7cff;
+    --accent2:   #7b5ea7;
+
+    --green:     #2dd4a0;
+    --green-bg:  #0d2e25;
+    --green-border: #1a5441;
+
+    --blue:      #4f9eff;
+    --blue-bg:   #0d1e35;
+    --blue-border: #1a3d6b;
+
+    --amber:     #f5c842;
+    --amber-bg:  #2a2005;
+    --amber-border: #5a4510;
+
+    --red:       #f05252;
+    --red-bg:    #2a0d0d;
+    --red-border:#5a1a1a;
+
+    --blocker:   #c084fc;
+    --blocker-bg:#1e0a2e;
+  }
+
+  body.light {
+    --bg:        #f4f6fa;
+    --surface:   #ffffff;
+    --surface2:  #eef1f7;
+    --border:    #d8dde8;
+    --border2:   #c2c9d8;
+    --text:      #111827;
+    --muted:     #6b7280;
+    --accent:    #2563eb;
+    --accent2:   #7c3aed;
+
+    --green:     #047857;
+    --green-bg:  #d1fae5;
+    --green-border: #6ee7b7;
+
+    --blue:      #1d4ed8;
+    --blue-bg:   #dbeafe;
+    --blue-border: #93c5fd;
+
+    --amber:     #b45309;
+    --amber-bg:  #fef3c7;
+    --amber-border: #fcd34d;
+
+    --red:       #b91c1c;
+    --red-bg:    #fee2e2;
+    --red-border:#fca5a5;
+
+    --blocker:   #7c3aed;
+    --blocker-bg:#ede9fe;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 2.5rem 2.5rem 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .header-left { display: flex; flex-direction: column; gap: 4px; }
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .header-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .header-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Nav tabs ── */
+  .nav {
+    display: flex;
+    gap: 2px;
+    padding: 0 2.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .nav-tab {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    cursor: pointer;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── Main layout ── */
+  .main { padding: 0 2.5rem 4rem; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── Wave selector ── */
+  .wave-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .wave-pill {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--surface);
+  }
+  .wave-pill:hover { border-color: var(--accent); color: var(--accent); }
+  .wave-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* ── Cards & grids ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .card-body { padding: 18px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .gap-16 { display: flex; flex-direction: column; gap: 16px; }
+
+  /* ── Section headings ── */
+  .section-heading {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* ── RAG badges ── */
+  .rag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .rag-complete  { background: var(--green-bg);   color: var(--green);  border: 1px solid var(--green-border); }
+  .rag-on-track  { background: var(--blue-bg);    color: var(--blue);   border: 1px solid var(--blue-border); }
+  .rag-at-risk   { background: var(--amber-bg);   color: var(--amber);  border: 1px solid var(--amber-border); }
+  .rag-behind    { background: var(--red-bg);      color: var(--red);    border: 1px solid var(--red-border); }
+
+  /* ── Stat blocks ── */
+  .stat-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+  .stat-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ── Dual-track progress bars (overview) ── */
+  .dual-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .dual-bar-row  { display: flex; align-items: center; gap: 10px; }
+  .dual-bar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    width: 68px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .dual-bar-track {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--border2);
+    position: relative;
+    overflow: hidden;
+  }
+  .dual-bar-track.ant-track { background: var(--border); }
+  .dual-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .dual-bar-ant-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,0.3) 0px, rgba(255,255,255,0.3) 4px,
+      transparent 4px, transparent 8px
+    );
+  }
+  .dual-bar-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    width: 48px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  /* ── Single-track progress bar (activity section) ── */
+  .progress-wrap { margin: 8px 0 4px; position: relative; }
+  .progress-bar-bg { height: 6px; border-radius: 3px; background: var(--border2); position: relative; overflow: visible; }
+  .progress-bar-fill { height: 6px; border-radius: 3px; transition: width 0.5s ease; position: relative; z-index: 1; }
+  .progress-bar-ant { position: absolute; top: 0; height: 6px; border-right: 2px dashed rgba(255,255,255,0.4); z-index: 2; pointer-events: none; }
+  .progress-labels { display: flex; justify-content: space-between; margin-top: 5px; }
+  .progress-label  { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+
+  /* ── Wave completion table ── */
+  .completion-table { width: 100%; border-collapse: collapse; }
+  .completion-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .completion-table td {
+    padding: 12px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .completion-table tr:last-child td { border-bottom: none; }
+  .completion-table tr:hover td { background: var(--surface2); }
+  .wave-name-cell { font-weight: 500; color: var(--text); }
+  .wave-name-sub  { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .mono { font-family: 'DM Mono', monospace; }
+  .positive { color: var(--green); }
+  .negative { color: var(--amber); }
+  .neutral  { color: var(--muted); }
+
+  /* ── Activity donut ── */
+  .donut-wrap { display: flex; align-items: center; gap: 20px; }
+  .donut-legend { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .donut-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-left: auto; }
+
+  /* ── Scorecard grid ── */
+  .sc-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .sc-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 8px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .sc-table th:first-child { text-align: left; }
+  .sc-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+  .sc-table td:first-child { text-align: left; font-family: 'DM Sans', sans-serif; font-weight: 500; }
+  .sc-table tr:last-child td { border-bottom: none; }
+  .sc-pill {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+  .sc-green  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-border); }
+  .sc-amber  { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-border); }
+  .sc-red    { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-border); }
+  .sc-grey   { background: var(--surface2);  color: var(--muted);  border: 1px solid var(--border); }
+
+  /* ── Issues ── */
+  .priority-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+  .pri-blocker { background: var(--blocker-bg); color: var(--blocker); border: 1px solid #4a1a6e; }
+  .pri-critical { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .pri-high    { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .pri-medium  { background: var(--blue-bg);  color: var(--blue);  border: 1px solid var(--blue-border); }
+  .pri-low     { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+  .issue-row {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 56px 90px 1fr 130px 100px 90px;
+    gap: 12px;
+    align-items: start;
+  }
+  .issue-row:last-child { border-bottom: none; }
+  .issue-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .issue-name { font-weight: 500; font-size: 13px; }
+  .issue-cat  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .issue-owner { font-size: 12px; color: var(--muted); }
+  .issue-followup { font-family: 'DM Mono', monospace; font-size: 11px; }
+  .overdue { color: var(--amber); font-weight: 500; }
+  .no-issues {
+    padding: 32px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* ── Checklist ── */
+  .checklist-grid { display: flex; flex-direction: column; gap: 8px; }
+  .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .checklist-item:hover { border-color: var(--border2); }
+  .checklist-item.checked {
+    background: var(--green-bg);
+    border-color: var(--green-border);
+  }
+  .checklist-item.overdue-item {
+    border-color: var(--amber-border);
+  }
+  .checklist-cb {
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border2);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    background: var(--surface);
+  }
+  .checked .checklist-cb {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .checklist-cb svg { display: none; }
+  .checked .checklist-cb svg { display: block; }
+  .checklist-label {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+  .checked .checklist-label {
+    color: var(--green);
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+  .checklist-due {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .checklist-due.past { color: var(--green); }
+  .checklist-due.overdue { color: var(--amber); }
+  .checklist-due.upcoming { color: var(--blue); }
+  .checklist-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .checklist-progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .checklist-progress-fill {
+    height: 4px;
+    background: var(--green);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  /* ── Wave summary bar (overview) ── */
+  .overview-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .wave-summary-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 240px 1fr 110px;
+    align-items: center;
+    gap: 24px;
+    transition: border-color 0.15s;
+  }
+  .wave-summary-row:hover { border-color: var(--border2); }
+  .wave-row-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: -0.01em; }
+  .wave-row-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .wave-row-pct  { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; text-align: right; }
+
+  /* ── Utility ── */
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .flex-between { display: flex; align-items: center; justify-content: space-between; }
+  .text-muted { color: var(--muted); }
+  .text-mono { font-family: 'DM Mono', monospace; }
+
+  /* ── Ask the SPOG chat ── */
+  .chat-wrap {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 220px);
+    min-height: 480px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+  .chat-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+    padding: 40px 20px;
+    gap: 10px;
+  }
+  .chat-intro-icon {
+    font-size: 36px;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .chat-intro-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .chat-intro-sub {
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 400px;
+    line-height: 1.6;
+  }
+  .chat-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 12px;
+  }
+  .chat-suggestion {
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    background: var(--surface2);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+  }
+  .chat-suggestion:hover { border-color: var(--accent); color: var(--accent); }
+  .chat-bubble-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .chat-bubble-row.user { flex-direction: row-reverse; }
+  .chat-avatar {
+    width: 38px; height: 28px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .chat-avatar.user-av { background: var(--accent); color: #fff; }
+  .chat-avatar.bot-av  { background: var(--surface2); color: var(--accent); border: 1px solid var(--border2); }
+  .chat-bubble {
+    max-width: 72%;
+    padding: 11px 15px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+  .chat-bubble.user {
+    background: var(--accent);
+    color: #fff;
+    border-bottom-right-radius: 3px;
+  }
+  .chat-bubble.bot {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 3px;
+  }
+  .chat-bubble.bot strong { color: var(--accent); font-weight: 600; }
+  .chat-bubble.bot ul { padding-left: 16px; margin: 6px 0; }
+  .chat-bubble.bot li { margin: 3px 0; }
+  .chat-typing {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 14px 16px;
+  }
+  .chat-typing span {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    animation: typingDot 1.2s infinite;
+  }
+  .chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingDot { 0%,60%,100% { opacity:0.3; transform:scale(1); } 30% { opacity:1; transform:scale(1.2); } }
+  .chat-input-row {
+    display: flex;
+    gap: 10px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  /* ── Responsive ── */
+  .chat-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .chat-input:focus { border-color: var(--accent); }
+  .chat-input::placeholder { color: var(--muted); }
+  .chat-send {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+  }
+  .chat-send:hover { opacity: 0.85; }
+  .chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .issue-row { grid-template-columns: 1fr; }
+    .wave-summary-row { grid-template-columns: 1fr 80px; }
+    .wave-summary-row .progress-wrap { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <span class="header-eyebrow">Project Fairway · FedEx Freight Separation</span>
+    <span class="header-title">Pod 3 COE/Wave SPOG</span>
+    <span class="header-date">As of March 30, 2026  8:29 AM CT</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span class="rag rag-complete">Complete</span>
+    <span class="rag rag-on-track">On Track</span>
+    <span class="rag rag-at-risk">At Risk</span>
+    <span class="rag rag-behind">Behind</span>
+    <button id="theme-toggle" onclick="toggleTheme()" style="margin-left:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:5px 14px;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);transition:all 0.15s;">
+      <span id="theme-icon">☀</span>
+      <span id="theme-label">Light</span>
+    </button>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+  <button class="nav-tab" onclick="showSection('activity')">Activity Breakdown</button>
+  <button class="nav-tab" onclick="showSection('scorecard')">EAI Scorecard</button>
+  <button class="nav-tab" onclick="showSection('issues')">Issues</button>
+  <button class="nav-tab" onclick="showSection('checklist')">Team Checklist</button>
+  <button class="nav-tab" onclick="showSection('chat')">Ask the SPOG</button>
+</nav>
+
+<div class="main">
+
+  <!-- ══ OVERVIEW ══ -->
+  <div class="section active" id="section-overview">
+    <div class="section-heading">COE/Wave Completion — % Complete vs Anticipated</div>
+    <div class="overview-grid" id="overview-rows"></div>
+
+    <div class="grid-4 mt-24" id="overview-stats"></div>
+  </div>
+
+  <!-- ══ ACTIVITY BREAKDOWN ══ -->
+  <div class="section" id="section-activity">
+    <div class="wave-pills" id="activity-pills"></div>
+    <div id="activity-content"></div>
+  </div>
+
+  <!-- ══ EAI SCORECARD ══ -->
+  <div class="section" id="section-scorecard">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">EAI Readiness Scorecard by Wave</span>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">Green = complete · Amber = ≥90% · Red = &lt;90% · Grey = N/A</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="sc-table" id="scorecard-table"></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ISSUES ══ -->
+  <div class="section" id="section-issues">
+    <div class="grid-4" id="issues-summary-cards" style="margin-bottom:24px"></div>
+    <div class="wave-pills" id="issues-pills"></div>
+    <div id="issues-content"></div>
+  </div>
+
+  <!-- ══ CHECKLIST ══ -->
+  <div class="section" id="section-checklist">
+    <div class="wave-pills" id="checklist-pills"></div>
+    <div id="checklist-content"></div>
+  </div>
+
+  <!-- ══ ASK THE SPOG ══ -->
+  <div class="section" id="section-chat">
+    <div class="chat-wrap">
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-intro" id="chat-intro">
+          <div class="chat-intro-icon">⬡</div>
+          <div class="chat-intro-title">Ask the SPOG</div>
+          <div class="chat-intro-sub">Ask anything about Pod 3 wave data, issues, scorecard status, or activities.</div>
+          <div style="margin-top:16px;padding:10px 18px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:8px;display:flex;align-items:center;gap:10px;max-width:480px">
+            <span style="color:var(--amber);font-size:14px">⚠</span>
+            <span style="font-size:12px;color:var(--amber);line-height:1.5">Under construction — awaiting Accenture approval for the required API access.</span>
+          </div>
+          <div class="chat-suggestions">
+            <button class="chat-suggestion" onclick="sendSuggestion(this)">Which EAIs in 24.4 haven't completed UAT?</button>
+            <button class="chat-suggestion" onclick="sendSuggestion(this)">Which waves have open blocker issues?</button>
+            <button class="chat-suggestion" onclick="sendSuggestion(this)">What is Wave 19's current status?</button>
+            <button class="chat-suggestion" onclick="sendSuggestion(this)">Which waves are behind on anticipated completion?</button>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-input" type="text" placeholder="Ask a question about the Pod 3 data…" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="chat-send" id="chat-send-btn" onclick="sendChat()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14 8L2 2l2.5 6L2 14l12-6z" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────────
+const TODAY = new Date('2026-03-30');
+
+const WAVES = [
+  { key:'19',   name:'COE/Wave 19',   full:'19 — Commercial / Convey Paper Event',        cutover:'2026-03-07' },
+  { key:'21.4', name:'COE/Wave 21.4', full:'21.4 — Freight TIP Deployment',               cutover:'2026-03-19' },
+  { key:'22.3', name:'COE/Wave 22.3', full:'22.3 — Freight TIP Adoption',                 cutover:'2026-03-21' },
+  { key:'24.4', name:'COE/Wave 24.4', full:'24.4 — Convey Operations + FXF IAM Adoption', cutover:'2026-04-11' },
+  { key:'30.2', name:'COE/Wave 30.2', full:'30.2 — AKS RFID / Forklift / Dimensions',     cutover:'2026-04-26' },
+];
+
+const COMPLETION = {
+  '19':   { completed:545,  total:547,  pctComp:99.63, pctAnt:100.00, variance:-0.37, rag:'Behind',    late:2,   notLate:0   },
+  '21.4': { completed:38,   total:38,   pctComp:100.00,pctAnt:100.00, variance:0.00,  rag:'Complete',  late:0,   notLate:0   },
+  '22.3': { completed:148,  total:148,  pctComp:100.00,pctAnt:100.00, variance:0.00,  rag:'Complete',  late:0,   notLate:0   },
+  '24.4': { completed:1457, total:1788, pctComp:81.49, pctAnt:65.71,  variance:15.77, rag:'On Track',  late:133, notLate:198 },
+  '30.2': { completed:118,  total:303,  pctComp:38.94, pctAnt:22.86,  variance:16.09, rag:'On Track',  late:24,  notLate:161 },
+};
+
+const ACTIVITY = {
+  '19':   { completed:545,  active:1, ready:1,   pending:0,   total:547  },
+  '21.4': { completed:38,   active:0, ready:0,   pending:0,   total:38   },
+  '22.3': { completed:148,  active:0, ready:0,   pending:0,   total:148  },
+  '24.4': { completed:1457, active:6, ready:167, pending:158, total:1788 },
+  '30.2': { completed:118,  active:2, ready:57,  pending:126, total:303  },
+};
+
+const SC_PHASES = ['Dev Build','SIT Testing','UAT Testing','Perf Testing','IAM Testing','MINS','FIRST','IAM Questionnaire','SDLC Process','Prod Build'];
+const SCORECARD = {
+  '19':   ['56/56','54/54','36/40','0/0','0/0','30/30','1/1','0/57','N/A','0/0'],
+  '21.4': ['1/1','1/1','1/1','1/1','0/1','0/0','0/0','0/0','N/A','1/1'],
+  '22.3': ['7/7','7/7','7/7','1/1','1/2','4/4','1/1','0/6','N/A','1/1'],
+  '24.4': ['137/137','118/118','109/110','0/0','24/24','137/137','137/137','137/137','N/A','0/0'],
+  '30.2': ['14/14','11/11','0/0','0/0','0/2','0/0','0/0','0/5','N/A','0/9'],
+};
+
+const ISSUES_SUMMARY = {
+  '19':   { total:4,  open:4, closed:0, critical:0, blocker:0, high:3, medium:1, low:0 },
+  '21.4': { total:0,  open:0, closed:0, critical:0, blocker:0, high:0, medium:0, low:0 },
+  '22.3': { total:0,  open:0, closed:0, critical:0, blocker:0, high:0, medium:0, low:0 },
+  '24.4': { total:3,  open:3, closed:0, critical:0, blocker:0, high:3, medium:0, low:0 },
+  '30.2': { total:1,  open:1, closed:0, critical:0, blocker:1, high:0, medium:0, low:0 },
+};
+
+const ISSUES_DETAIL = {
+  '19': [
+    { num:5683, priority:'High',    status:'Resolution In Progress', category:'Application',         name:'Conflicting disposition',                              owner:'Olubusola Tejuoso', followup:'03/27/2026', overdue:'⚠ 3d'  },
+    { num:5209, priority:'High',    status:'Resolution In Progress', category:'Application',         name:'Archer and BCDR not completed',                        owner:'Alpesh Rambiya',    followup:'03/19/2026', overdue:'⚠ 11d' },
+    { num:5615, priority:'High',    status:'Resolution In Progress', category:'Cutover Event - Move EAI', name:'CR1165-Move to COE 14.1',                         owner:'Karen Kelly',       followup:'03/20/2026', overdue:'⚠ 10d' },
+    { num:5653, priority:'Medium',  status:'Issue Identified',       category:'Cutover - Scope',     name:'DR Activity for FPAD',                                 owner:'Jake Munz',         followup:'04/10/2026', overdue:'—'     },
+  ],
+  '21.4': [],
+  '22.3': [],
+  '24.4': [
+    { num:4293, priority:'High',    status:'Resolution In Progress', category:'Access',              name:'CMQT Roles being used by Vendors with Hard Tokens',    owner:'Corey Allert',      followup:'03/11/2026', overdue:'⚠ 19d' },
+    { num:5731, priority:'High',    status:'Resolution In Progress', category:'Cutover Event - Move EAI', name:'CR1189-Remove EAI 3535527 from 24.4 COE',         owner:'—',                 followup:'03/30/2026', overdue:'⚠ 0d'  },
+    { num:5944, priority:'High',    status:'Issue Identified',       category:'Template',            name:'Add App Level Activity for ETL and Batch requirements', owner:'John Wick',         followup:'04/03/2026', overdue:'—'     },
+  ],
+  '30.2': [
+    { num:5972, priority:'Blocker', status:'Issue Identified',       category:'Access',              name:'Unable to access github repos for migration',          owner:'—',                 followup:'03/27/2026', overdue:'⚠ 3d'  },
+  ],
+};
+
+const CHECKLIST_TASKS = [
+  { id:'kickoff',   label:'Kickoff Call Completed',     tOffset:-35 },
+  { id:'playbook',  label:'Create Playbook',            tOffset:-30 },
+  { id:'review',    label:'Review Playbook',            tOffset:-20 },
+  { id:'comms',     label:'Comms Prepared',             tOffset:-20 },
+  { id:'hbh_sched', label:'Hour by Hour Scheduled',    tOffset:-10 },
+  { id:'tminus10',  label:'T-10 Emails',                tOffset:-10 },
+  { id:'hbh_done',  label:'Hour by Hour Completed',    tOffset:-5  },
+  { id:'gng_sched', label:'Go/No Go Scheduled',         tOffset:-5  },
+  { id:'gng_done',  label:'Go/No Go Completed',         tOffset:-3  },
+];
+
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+function ragClass(rag) {
+  return { 'Complete':'rag-complete','On Track':'rag-on-track','At Risk':'rag-at-risk','Behind':'rag-behind' }[rag] || 'rag-on-track';
+}
+
+function scColor(val) {
+  if (val === 'N/A') return 'sc-grey';
+  const [n, d] = val.split('/').map(Number);
+  if (isNaN(n) || isNaN(d)) return 'sc-grey';
+  if (d === 0) return 'sc-grey';
+  if (n === d) return 'sc-green';
+  return (n / d >= 0.9) ? 'sc-amber' : 'sc-red';
+}
+
+function priClass(p) {
+  return { 'Blocker':'pri-blocker','Critical':'pri-critical','High':'pri-high','Medium':'pri-medium','Low':'pri-low' }[p] || 'pri-low';
+}
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function fmtDate(d) {
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function dueStat(dueDate) {
+  const diff = Math.round((dueDate - TODAY) / 86400000);
+  if (diff > 7)  return { cls:'upcoming', label: fmtDate(dueDate) };
+  if (diff >= 0) return { cls:'upcoming', label: fmtDate(dueDate) + ' (' + diff + 'd)' };
+  return { cls: dueDate < new Date('2026-01-01') ? 'past' : 'overdue', label: fmtDate(dueDate) };
+}
+
+function getChecked(waveKey) {
+  try { return JSON.parse(localStorage.getItem('checklist_' + waveKey) || '{}'); } catch { return {}; }
+}
+function setChecked(waveKey, id, val) {
+  const data = getChecked(waveKey);
+  data[id] = val;
+  localStorage.setItem('checklist_' + waveKey, JSON.stringify(data));
+}
+
+// ── NAV ──────────────────────────────────────────────────────────────────────
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── OVERVIEW ─────────────────────────────────────────────────────────────────
+function buildOverview() {
+  const rows = document.getElementById('overview-rows');
+  WAVES.forEach(w => {
+    const c = COMPLETION[w.key];
+    const pct = c.pctComp;
+    const ant = c.pctAnt;
+    const varSign = c.variance >= 0 ? '+' : '';
+    const ragCls  = ragClass(c.rag);
+    const pctColor = { 'Complete':'var(--green)','On Track':'var(--blue)','At Risk':'var(--amber)','Behind':'var(--red)' }[c.rag];
+    const antColor = 'rgba(255,255,255,0.35)';
+
+    rows.innerHTML += `
+      <div class="wave-summary-row">
+        <div>
+          <div class="wave-row-name">${w.name}</div>
+          <div class="wave-row-date">Cutover: ${new Date(w.cutover+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+        </div>
+        <div class="dual-bar-wrap">
+          <div class="dual-bar-row">
+            <span class="dual-bar-label" style="color:${pctColor}">Actual</span>
+            <div class="dual-bar-track">
+              <div class="dual-bar-fill" style="width:${Math.min(pct,100)}%;background:${pctColor}"></div>
+            </div>
+            <span class="dual-bar-pct" style="color:${pctColor}">${pct.toFixed(1)}%</span>
+          </div>
+          <div class="dual-bar-row">
+            <span class="dual-bar-label" style="color:var(--muted)">Anticipated</span>
+            <div class="dual-bar-track ant-track">
+              <div class="dual-bar-ant-fill" style="width:${Math.min(ant,100)}%"></div>
+            </div>
+            <span class="dual-bar-pct" style="color:var(--muted)">${ant.toFixed(1)}%</span>
+          </div>
+        </div>
+        <div style="text-align:right;min-width:80px">
+          <div style="font-family:'DM Mono',monospace;font-size:12px;color:${c.variance>=0?'var(--green)':'var(--red)'};margin-bottom:4px">${varSign}${c.variance.toFixed(2)}pp</div>
+          <span class="rag ${ragCls}">${c.rag}</span>
+        </div>
+      </div>`;
+  });
+
+  // Summary stats
+  const total = WAVES.reduce((a,w) => a + COMPLETION[w.key].total, 0);
+  const done  = WAVES.reduce((a,w) => a + COMPLETION[w.key].completed, 0);
+  const openIssues = Object.values(ISSUES_SUMMARY).reduce((a,i) => a + i.open, 0);
+  const lateActs = WAVES.reduce((a,w) => a + COMPLETION[w.key].late, 0);
+
+  const stats = document.getElementById('overview-stats');
+  stats.innerHTML = `
+    <div class="stat-block">
+      <div class="stat-label">Total Completed</div>
+      <div class="stat-value">${done.toLocaleString()}</div>
+      <div class="stat-sub">of ${total.toLocaleString()} activities</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">Overall Progress</div>
+      <div class="stat-value">${(done/total*100).toFixed(1)}%</div>
+      <div class="stat-sub">across all 5 waves</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">Open Issues</div>
+      <div class="stat-value" style="color:var(--amber)">${openIssues}</div>
+      <div class="stat-sub">across active waves</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">Late Activities</div>
+      <div class="stat-value" style="color:var(--red)">${lateActs}</div>
+      <div class="stat-sub">across all waves</div>
+    </div>`;
+}
+
+// ── ACTIVITY BREAKDOWN ────────────────────────────────────────────────────────
+let actWave = '19';
+function buildActivityPills() {
+  const el = document.getElementById('activity-pills');
+  WAVES.forEach(w => {
+    el.innerHTML += `<button class="wave-pill ${w.key===actWave?'active':''}" onclick="selectActivityWave('${w.key}',this)">${w.name}</button>`;
+  });
+}
+function selectActivityWave(key, btn) {
+  actWave = key;
+  document.querySelectorAll('#activity-pills .wave-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderActivity();
+}
+function renderActivity() {
+  const a = ACTIVITY[actWave];
+  const c = COMPLETION[actWave];
+  const total = a.total;
+  const segments = [
+    { label:'Completed', val:a.completed, color:'var(--green)'  },
+    { label:'Active',    val:a.active,    color:'var(--blue)'   },
+    { label:'Ready',     val:a.ready,     color:'var(--accent2)'},
+    { label:'Pending',   val:a.pending,   color:'var(--muted)'  },
+  ];
+
+  // Build SVG donut
+  let svgPaths = ''; let offset = 0;
+  const R = 54; const CX = 64; const CY = 64;
+  segments.forEach(s => {
+    const pct = total > 0 ? s.val / total : 0;
+    if (pct === 0) return;
+    const startA = offset * 2 * Math.PI - Math.PI/2;
+    const endA   = (offset + pct) * 2 * Math.PI - Math.PI/2;
+    const x1 = CX + R * Math.cos(startA); const y1 = CY + R * Math.sin(startA);
+    const x2 = CX + R * Math.cos(endA);   const y2 = CY + R * Math.sin(endA);
+    const largeArc = pct > 0.5 ? 1 : 0;
+    svgPaths += `<path d="M${CX},${CY} L${x1},${y1} A${R},${R} 0 ${largeArc},1 ${x2},${y2} Z" fill="${s.color}" opacity="0.85"/>`;
+    offset += pct;
+  });
+  // inner circle
+  svgPaths += `<circle cx="${CX}" cy="${CY}" r="36" fill="var(--surface)"/>`;
+  svgPaths += `<text x="${CX}" y="${CY-4}" text-anchor="middle" fill="var(--text)" font-family="Syne,sans-serif" font-size="16" font-weight="800">${(c.pctComp).toFixed(1)}%</text>`;
+  svgPaths += `<text x="${CX}" y="${CY+13}" text-anchor="middle" fill="var(--muted)" font-family="DM Mono,monospace" font-size="9">COMPLETE</text>`;
+
+  const legend = segments.map(s => `
+    <div class="donut-legend-item">
+      <div class="legend-dot" style="background:${s.color}"></div>
+      <span style="color:var(--text)">${s.label}</span>
+      <span class="legend-val">${s.val.toLocaleString()}</span>
+    </div>`).join('');
+
+  document.getElementById('activity-content').innerHTML = `
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Activity Status</span></div>
+        <div class="card-body">
+          <div class="donut-wrap">
+            <svg width="128" height="128" viewBox="0 0 128 128">${svgPaths}</svg>
+            <div class="donut-legend">${legend}</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Late & On-time</span></div>
+        <div class="card-body">
+          <div class="grid-2">
+            <div class="stat-block">
+              <div class="stat-label">Late Activities</div>
+              <div class="stat-value" style="color:var(--red)">${c.late}</div>
+              <div class="stat-sub">incomplete + late</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-label">Not Late</div>
+              <div class="stat-value" style="color:var(--green)">${c.notLate}</div>
+              <div class="stat-sub">incomplete + on time</div>
+            </div>
+          </div>
+          <div style="margin-top:16px">
+            <div class="dual-bar-wrap">
+              <div class="dual-bar-row">
+                <span class="dual-bar-label" style="color:var(--green)">Actual</span>
+                <div class="dual-bar-track">
+                  <div class="dual-bar-fill" style="width:${c.pctComp.toFixed(2)}%;background:var(--green)"></div>
+                </div>
+                <span class="dual-bar-pct" style="color:var(--green)">${c.pctComp.toFixed(1)}%</span>
+              </div>
+              <div class="dual-bar-row">
+                <span class="dual-bar-label" style="color:var(--muted)">Anticipated</span>
+                <div class="dual-bar-track ant-track">
+                  <div class="dual-bar-ant-fill" style="width:${c.pctAnt.toFixed(2)}%"></div>
+                </div>
+                <span class="dual-bar-pct" style="color:var(--muted)">${c.pctAnt.toFixed(1)}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── SCORECARD ─────────────────────────────────────────────────────────────────
+function buildScorecard() {
+  let html = `<thead><tr><th>COE/Wave</th>${SC_PHASES.map(p=>`<th>${p}</th>`).join('')}</tr></thead><tbody>`;
+  WAVES.forEach(w => {
+    const vals = SCORECARD[w.key];
+    html += `<tr><td>${w.name}</td>${vals.map((v,i) => `<td><span class="sc-pill ${scColor(v)}">${v}</span></td>`).join('')}</tr>`;
+  });
+  html += '</tbody>';
+  document.getElementById('scorecard-table').innerHTML = html;
+}
+
+// ── ISSUES ────────────────────────────────────────────────────────────────────
+let issWave = '19';
+function buildIssuesSummary() {
+  const el = document.getElementById('issues-summary-cards');
+  const totals = { total:0, open:0, high:0, blocker:0 };
+  Object.values(ISSUES_SUMMARY).forEach(i => {
+    totals.total += i.total; totals.open += i.open;
+    totals.high += i.high; totals.blocker += i.blocker;
+  });
+  el.innerHTML = `
+    <div class="stat-block"><div class="stat-label">Total Issues</div><div class="stat-value">${totals.total}</div></div>
+    <div class="stat-block"><div class="stat-label">Open</div><div class="stat-value" style="color:var(--amber)">${totals.open}</div></div>
+    <div class="stat-block"><div class="stat-label">High Priority</div><div class="stat-value" style="color:var(--amber)">${totals.high}</div></div>
+    <div class="stat-block"><div class="stat-label">Blockers</div><div class="stat-value" style="color:var(--blocker)">${totals.blocker}</div></div>`;
+}
+function buildIssuesPills() {
+  const el = document.getElementById('issues-pills');
+  WAVES.forEach(w => {
+    const count = ISSUES_SUMMARY[w.key].open;
+    el.innerHTML += `<button class="wave-pill ${w.key===issWave?'active':''}" onclick="selectIssuesWave('${w.key}',this)">${w.name}${count>0?` <span style="opacity:0.7">(${count})</span>`:''}</button>`;
+  });
+}
+function selectIssuesWave(key, btn) {
+  issWave = key;
+  document.querySelectorAll('#issues-pills .wave-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderIssues();
+}
+function renderIssues() {
+  const issues = ISSUES_DETAIL[issWave];
+  const el = document.getElementById('issues-content');
+  if (!issues.length) {
+    el.innerHTML = `<div class="card"><div class="no-issues">No open issues for ${WAVES.find(w=>w.key===issWave).name}</div></div>`;
+    return;
+  }
+  const rows = issues.map(i => `
+    <div class="issue-row">
+      <div class="issue-num">#${i.num}</div>
+      <div><span class="priority-badge ${priClass(i.priority)}">${i.priority}</span></div>
+      <div>
+        <div class="issue-name">${i.name}</div>
+        <div class="issue-cat">${i.category} · ${i.status}</div>
+      </div>
+      <div class="issue-owner">${i.owner}</div>
+      <div class="issue-followup">${i.followup}</div>
+      <div class="issue-followup ${i.overdue !== '—' ? 'overdue' : ''}">${i.overdue}</div>
+    </div>`).join('');
+  el.innerHTML = `<div class="card"><div style="padding:0 18px"><div style="display:grid;grid-template-columns:56px 90px 1fr 130px 100px 90px;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><span class="text-mono" style="font-size:10px;color:var(--muted);letter-spacing:.07em">ISSUE</span><span class="text-mono" style="font-size:10px;color:var(--muted);letter-spacing:.07em">PRIORITY</span><span class="text-mono" style="font-size:10px;color:var(--muted);letter-spacing:.07em">NAME</span><span class="text-mono" style="font-size:10px;color:var(--muted);letter-spacing:.07em">OWNER</span><span class="text-mono" style="font-size:10px;color:var(--muted);letter-spacing:.07em">FOLLOW-UP</span><span class="text-mono" style="font-size:10px;color:var(--muted);letter-spacing:.07em">OVERDUE</span></div>${rows}</div></div>`;
+}
+
+// ── CHECKLIST ─────────────────────────────────────────────────────────────────
+let clWave = '24.4';
+function buildChecklistPills() {
+  const el = document.getElementById('checklist-pills');
+  WAVES.forEach(w => {
+    el.innerHTML += `<button class="wave-pill ${w.key===clWave?'active':''}" onclick="selectChecklistWave('${w.key}',this)">${w.name}</button>`;
+  });
+}
+function selectChecklistWave(key, btn) {
+  clWave = key;
+  document.querySelectorAll('#checklist-pills .wave-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderChecklist();
+}
+function renderChecklist() {
+  const wave = WAVES.find(w => w.key === clWave);
+  const checked = getChecked(clWave);
+  const tasks = CHECKLIST_TASKS.map(t => {
+    const due = addDays(wave.cutover, t.tOffset);
+    const stat = dueStat(due);
+    return { id: t.id, label: t.label, tOffset: t.tOffset, due, cls: stat.cls };
+  });
+
+  // Progress = checked past-due items / total past-due items
+  const pastDue = tasks.filter(t => t.cls === 'overdue' || t.cls === 'past');
+  const doneCount = pastDue.filter(t => checked[t.id]).length;
+  const pct = pastDue.length > 0 ? Math.round(doneCount / pastDue.length * 100) : 0;
+
+  document.getElementById('checklist-content').innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">${wave.name} — Pre-Cutover Checklist</span>
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">Cutover: ${new Date(wave.cutover+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
+      </div>
+      <div class="card-body">
+        <div class="checklist-progress">
+          <span>${doneCount} / ${pastDue.length} past-due complete</span>
+          <div class="checklist-progress-bar"><div class="checklist-progress-fill" style="width:${pct}%"></div></div>
+          <span>${pct}%</span>
+        </div>
+        <div class="checklist-grid">${buildChecklistItems(tasks, checked)}</div>
+      </div>
+    </div>`;
+}
+
+function buildChecklistItems(tasks, checked) {
+  return tasks.map(t => {
+    const isChecked = !!checked[t.id];
+    const isOverdue = t.cls === 'overdue' && !isChecked;
+    const dueLabel = fmtDate(t.due);
+    const statusLabel = t.cls === 'overdue' && !isChecked ? 'Overdue' :
+                        t.cls === 'past' ? 'Complete by' : 'Due';
+    const statusColor = t.cls === 'overdue' && !isChecked ? 'var(--amber)' :
+                        t.cls === 'past' ? 'var(--green)' : 'var(--blue)';
+    return `
+      <div class="checklist-item ${isChecked?'checked':''} ${isOverdue?'overdue-item':''}" onclick="toggleCheck('${t.id}', this)" data-wave="${clWave}" data-task="${t.id}">
+        <div class="checklist-cb">
+          <svg width="10" height="10" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2" stroke="var(--bg)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="checklist-label">${t.label}</span>
+        <div style="text-align:right;min-width:140px">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">T${t.tOffset}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:${statusColor}">${statusLabel}: ${dueLabel}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleCheck(taskId, el) {
+  const waveKey = el.getAttribute('data-wave');
+  const isChecked = el.classList.contains('checked');
+  setChecked(waveKey, taskId, !isChecked);
+  renderChecklist();
+}
+
+// ── THEME TOGGLE ──────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('theme-icon').textContent  = isLight ? '🌙' : '☀';
+  document.getElementById('theme-label').textContent = isLight ? 'Dark' : 'Light';
+  localStorage.setItem('spog-theme', isLight ? 'light' : 'dark');
+}
+// Restore saved theme on load
+if (localStorage.getItem('spog-theme') === 'light') {
+  document.body.classList.add('light');
+  document.getElementById('theme-icon').textContent  = '🌙';
+  document.getElementById('theme-label').textContent = 'Dark';
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+buildOverview();
+buildActivityPills();
+renderActivity();
+buildScorecard();
+buildIssuesSummary();
+buildIssuesPills();
+renderIssues();
+buildChecklistPills();
+renderChecklist();
+
+// ── ASK THE SPOG CHATBOT ──────────────────────────────────────────────────────
+const SPOG_SYSTEM_PROMPT = `You are an expert assistant for the Pod 3 migration team on Project Fairway, a FedEx Freight (FXF) separation program at Accenture. You have deep knowledge of all wave data in the Pod 3 SPOG (Single Pane of Glass) report as of March 30, 2026 at 8:29 AM CT.
+
+Answer questions concisely and accurately using only the data below. Use bullet points for lists. Bold key names or numbers.
+
+== WAVE COMPLETION (as of Mar 30, 2026) ==
+- COE/Wave 19 (cutover Mar 7, 2026): 545/547 complete = 99.63% actual vs 100% anticipated. Variance: -0.37pp. Status: BEHIND (cutover passed, not 100%).
+- COE/Wave 21.4 (cutover Mar 19, 2026): 38/38 = 100% complete. Status: COMPLETE.
+- COE/Wave 22.3 (cutover Mar 21, 2026): 148/148 = 100% complete. Status: COMPLETE.
+- COE/Wave 24.4 (cutover Apr 11, 2026): 1457/1788 = 81.49% actual vs 65.71% anticipated. Variance: +15.77pp. Status: ON TRACK.
+- COE/Wave 30.2 (cutover Apr 26, 2026): 118/303 = 38.94% actual vs 22.86% anticipated. Variance: +16.09pp. Status: ON TRACK.
+
+== ACTIVITY STATUS BREAKDOWN ==
+Wave 19:   Completed=545, Active=1, Ready=1, Pending=0, Total=547, Late=2, Not Late (incomplete)=0
+Wave 21.4: Completed=38,  Active=0, Ready=0, Pending=0, Total=38,  Late=0, Not Late=0
+Wave 22.3: Completed=148, Active=0, Ready=0, Pending=0, Total=148, Late=0, Not Late=0
+Wave 24.4: Completed=1457,Active=6, Ready=167,Pending=158,Total=1788,Late=133,Not Late (incomplete)=198
+Wave 30.2: Completed=118, Active=2, Ready=57, Pending=126,Total=303, Late=24, Not Late (incomplete)=161
+
+== EAI READINESS SCORECARD (excludes 54 pure-retain apps from Wave 24.4) ==
+Wave 19:   Dev Build=56/56, SIT=54/54, UAT=36/40, Perf=0/0, IAM=0/0, MINS=30/30, FIRST=1/1, IAM Questionnaire=0/57, SDLC=N/A, Prod Build=0/0
+Wave 21.4: Dev Build=1/1,   SIT=1/1,   UAT=1/1,   Perf=1/1, IAM=0/1, MINS=0/0,   FIRST=0/0,  IAM Questionnaire=0/0,  SDLC=N/A, Prod Build=1/1
+Wave 22.3: Dev Build=7/7,   SIT=7/7,   UAT=7/7,   Perf=1/1, IAM=1/2, MINS=4/4,   FIRST=1/1,  IAM Questionnaire=0/6,  SDLC=N/A, Prod Build=1/1
+Wave 24.4: Dev Build=137/137,SIT=118/118,UAT=109/110,Perf=0/0,IAM=24/24,MINS=137/137,FIRST=137/137,IAM Questionnaire=137/137,SDLC=N/A,Prod Build=0/0
+Wave 30.2: Dev Build=14/14, SIT=11/11, UAT=0/0,   Perf=0/0, IAM=0/2, MINS=0/0,   FIRST=0/0,  IAM Questionnaire=0/5,  SDLC=N/A, Prod Build=0/9
+
+== INCOMPLETE PHASE GATE EAIs ==
+Wave 19 — UAT not complete (4 apps):
+  - EAI 3535368 / FPAD — Status: Delayed
+  - EAI 3537616 / FXF-SampleShipment — Status: On Track
+  - EAI 3538057 / FXF-PnD-Accessorial-Orchestrator — Status: On Track
+  - EAI 3538785 / FXF-RateQuote DAS — Status: On Track
+
+Wave 24.4 — UAT not complete (1 app):
+  - EAI 6517 / FXF-SAS — Status: Delayed
+
+Wave 30.2 — IAM Testing not complete (2 apps):
+  - EAI 3531323 / FXF-RFID-UI — Status: On Track
+  - EAI 3537631 / FEC-Asset-HUB-DC — Status: On Track
+  - EAI 3541661 / FDXF-FXF-Asset-HUB-DC — Status: On Track
+
+== OPEN ISSUES ==
+Wave 19 (4 open — 3 High, 1 Medium):
+  #5683 High | Conflicting disposition | Owner: Olubusola Tejuoso | Follow-up: 03/27/2026 | Overdue 3d
+  #5209 High | Archer and BCDR not completed | Owner: Alpesh Rambiya | Follow-up: 03/19/2026 | Overdue 11d
+  #5615 High | CR1165-Move to COE 14.1 | Owner: Karen Kelly | Follow-up: 03/20/2026 | Overdue 10d
+  #5653 Medium | DR Activity for FPAD | Owner: Jake Munz | Follow-up: 04/10/2026
+
+Wave 21.4: No open issues.
+Wave 22.3: No open issues.
+
+Wave 24.4 (3 open — 3 High):
+  #4293 High | CMQT Roles being used by Vendors with Hard Tokens | Owner: Corey Allert | Follow-up: 03/11/2026 | Overdue 19d
+  #5731 High | CR1189-Remove EAI 3535527 from 24.4 COE | Owner: unassigned | Follow-up: 03/30/2026 | Overdue 0d
+  #5944 High | Add App Level Activity for ETL and Batch requirements | Owner: John Wick | Follow-up: 04/03/2026
+
+Wave 30.2 (1 open — 1 Blocker):
+  #5972 Blocker | Unable to access github repos for migration | Owner: unassigned | Follow-up: 03/27/2026 | Overdue 3d
+
+== OVERDUE ISSUES SUMMARY ==
+Total open: 8. Overdue: 5 (issues past their follow-up date as of Mar 30).
+Most overdue: #4293 in Wave 24.4 (19 days overdue).
+
+== WAVE APP COUNTS (after removing 54 pure-retain apps from 24.4) ==
+Wave 24.4 scorecard tracks 137 non-retain apps. 84 total apps in bundle report had App-Retain approach; 54 were pure-retain (excluded), 19 were mixed-approach (kept).
+
+Respond in a helpful, direct tone. If asked something outside the data above, say you don't have that information in the current SPOG snapshot.`;
+
+let chatHistory = [];
+
+function sendSuggestion(btn) {
+  document.getElementById('chat-input').value = btn.textContent;
+  sendChat();
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  // Hide intro
+  const intro = document.getElementById('chat-intro');
+  if (intro) intro.style.display = 'none';
+
+  appendBubble('user', msg);
+  chatHistory.push({ role: 'user', content: msg });
+
+  const typingId = appendTyping();
+  setInputEnabled(false);
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'anthropic-dangerous-direct-browser-access': 'true',
+      'x-api-key': 'YOUR_API_KEY_HERE',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: SPOG_SYSTEM_PROMPT,
+      messages: chatHistory,
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    console.log('API response:', JSON.stringify(data));
+    removeTyping(typingId);
+    if (data.error) {
+      appendBubble('bot', `Error: ${data.error.message}`);
+    } else {
+      const reply = data.content?.map(b => b.text || '').join('') || 'Sorry, I couldn\'t get a response.';
+      appendBubble('bot', reply);
+      chatHistory.push({ role: 'assistant', content: reply });
+    }
+    setInputEnabled(true);
+  })
+  .catch(err => {
+    console.log('Fetch error:', err);
+    removeTyping(typingId);
+    appendBubble('bot', `Connection error: ${err.message}`);
+    setInputEnabled(true);
+  });
+}
+
+function appendBubble(role, text) {
+  const msgs = document.getElementById('chat-messages');
+  const row = document.createElement('div');
+  row.className = `chat-bubble-row ${role}`;
+  const initials = role === 'user' ? 'YOU' : 'SPOG';
+  const formatted = role === 'bot' ? formatBotMessage(text) : escapeHtml(text);
+  row.innerHTML = `
+    <div class="chat-avatar ${role}-av">${initials}</div>
+    <div class="chat-bubble ${role}">${formatted}</div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function formatBotMessage(text) {
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function appendTyping(id) {
+  const msgs = document.getElementById('chat-messages');
+  const row = document.createElement('div');
+  const uid = 'typing-' + Date.now();
+  row.id = uid;
+  row.className = 'chat-bubble-row bot';
+  row.innerHTML = `<div class="chat-avatar bot-av">SPOG</div><div class="chat-bubble bot"><div class="chat-typing"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+  return uid;
+}
+
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function setInputEnabled(enabled) {
+  document.getElementById('chat-input').disabled = !enabled;
+  document.getElementById('chat-send-btn').disabled = !enabled;
+  if (enabled) document.getElementById('chat-input').focus();
+}
+</script>
+</body>
+</html>
