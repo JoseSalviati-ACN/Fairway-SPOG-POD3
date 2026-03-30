@@ -673,6 +673,69 @@
   .chat-send:hover { opacity: 0.85; }
   .chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
 
+  /* ── Category RAG cards ── */
+  .cat-rag-section { margin-top: 28px; }
+  .cat-rag-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .cat-rag-table { width: 100%; border-collapse: collapse; }
+  .cat-rag-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .cat-rag-table th:not(:first-child) { text-align: center; }
+  .cat-rag-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .cat-rag-table tr:last-child td { border-bottom: none; }
+  .cat-rag-table tr:hover td { background: var(--surface2); }
+  .cat-rag-table td:not(:first-child) { text-align: center; }
+  .cat-rag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .crp-green  { background: var(--green-bg);  color: var(--green);  border: 1px solid var(--green-border); }
+  .crp-amber  { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-border); }
+  .crp-red    { background: var(--red-bg);    color: var(--red);    border: 1px solid var(--red-border); }
+  .crp-grey   { background: var(--surface2);  color: var(--muted);  border: 1px solid var(--border); }
+  .subj-btn-group { display: flex; gap: 4px; justify-content: center; }
+  .subj-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    cursor: pointer;
+    background: var(--surface2);
+    color: var(--muted);
+    transition: all 0.12s;
+  }
+  .subj-btn:hover { border-color: var(--border); color: var(--text); }
+  .subj-btn.active-green { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+  .subj-btn.active-amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+  .subj-btn.active-red   { background: var(--red-bg);   color: var(--red);   border-color: var(--red-border); }
+
   /* ── Responsive ── */
   @media (max-width: 900px) {
     .grid-4 { grid-template-columns: 1fr 1fr; }
@@ -689,13 +752,14 @@
   <div class="header-left">
     <span class="header-eyebrow">Project Fairway · FedEx Freight Separation</span>
     <span class="header-title">Pod 3 COE/Wave SPOG</span>
-    <span class="header-date">As of March 30, 2026  8:29 AM CT</span>
+    <span class="header-date">As of March 30, 2026  2:47 PM CT</span>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
-    <span class="rag rag-complete">Complete</span>
-    <span class="rag rag-on-track">On Track</span>
-    <span class="rag rag-at-risk">At Risk</span>
-    <span class="rag rag-behind">Behind</span>
+    <span class="rag rag-complete" style="cursor:pointer" onclick="filterByRag('On Track')" title="Filter: On Track">Complete</span>
+    <span class="rag rag-on-track" style="cursor:pointer" onclick="filterByRag('On Track')" title="Filter: On Track">On Track</span>
+    <span class="rag rag-at-risk"  style="cursor:pointer" onclick="filterByRag('At Risk')"  title="Filter: At Risk">At Risk</span>
+    <span class="rag rag-behind"   style="cursor:pointer" onclick="filterByRag('Behind')"   title="Filter: Behind">Behind</span>
+    <span class="rag" id="filter-clear" style="cursor:pointer;display:none;border:1px solid var(--border2);color:var(--muted)" onclick="filterByRag(null)">✕ Clear</span>
     <button id="theme-toggle" onclick="toggleTheme()" style="margin-left:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:5px 14px;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);transition:all 0.15s;">
       <span id="theme-icon">☀</span>
       <span id="theme-label">Light</span>
@@ -716,14 +780,21 @@
 
   <!-- ══ OVERVIEW ══ -->
   <div class="section active" id="section-overview">
-    <div class="section-heading">COE/Wave Completion — % Complete vs Anticipated</div>
-    <div class="overview-grid" id="overview-rows"></div>
-
-    <div class="grid-4 mt-24" id="overview-stats"></div>
+    <div class="cat-rag-section">
+      <div class="cat-rag-section-title">Category RAG by COE/Wave</div>
+      <div class="card">
+        <div style="overflow-x:auto">
+          <table class="cat-rag-table" id="cat-rag-table"></table>
+        </div>
+      </div>
+    </div>
+    <div class="grid-4" id="overview-stats" style="margin-top:20px"></div>
   </div>
 
   <!-- ══ ACTIVITY BREAKDOWN ══ -->
   <div class="section" id="section-activity">
+    <div class="section-heading">COE/Wave Completion — % Complete vs Anticipated</div>
+    <div class="overview-grid" id="overview-rows" style="margin-bottom:28px"></div>
     <div class="wave-pills" id="activity-pills"></div>
     <div id="activity-content"></div>
   </div>
@@ -801,16 +872,24 @@ const COMPLETION = {
   '19':   { completed:545,  total:547,  pctComp:99.63, pctAnt:100.00, variance:-0.37, rag:'Behind',    late:2,   notLate:0   },
   '21.4': { completed:38,   total:38,   pctComp:100.00,pctAnt:100.00, variance:0.00,  rag:'Complete',  late:0,   notLate:0   },
   '22.3': { completed:148,  total:148,  pctComp:100.00,pctAnt:100.00, variance:0.00,  rag:'Complete',  late:0,   notLate:0   },
-  '24.4': { completed:1457, total:1788, pctComp:81.49, pctAnt:65.71,  variance:15.77, rag:'On Track',  late:133, notLate:198 },
-  '30.2': { completed:118,  total:303,  pctComp:38.94, pctAnt:22.86,  variance:16.09, rag:'On Track',  late:24,  notLate:161 },
+  '24.4': { completed:1477, total:1786, pctComp:82.70, pctAnt:65.71,  variance:16.98, rag:'On Track',  late:121, notLate:188 },
+  '30.2': { completed:120,  total:303,  pctComp:39.60, pctAnt:22.86,  variance:16.75, rag:'On Track',  late:24,  notLate:159 },
 };
+
+function getSubjective(waveKey) {
+  try { return JSON.parse(localStorage.getItem('subj_' + waveKey) || 'null'); } catch { return null; }
+}
+function setSubjective(waveKey, val) {
+  localStorage.setItem('subj_' + waveKey, JSON.stringify(val));
+  buildOverview();
+}
 
 const ACTIVITY = {
   '19':   { completed:545,  active:1, ready:1,   pending:0,   total:547  },
   '21.4': { completed:38,   active:0, ready:0,   pending:0,   total:38   },
   '22.3': { completed:148,  active:0, ready:0,   pending:0,   total:148  },
-  '24.4': { completed:1457, active:6, ready:167, pending:158, total:1788 },
-  '30.2': { completed:118,  active:2, ready:57,  pending:126, total:303  },
+  '24.4': { completed:1477, active:8, ready:146, pending:155, total:1786 },
+  '30.2': { completed:120,  active:1, ready:58,  pending:124, total:303  },
 };
 
 const SC_PHASES = ['Dev Build','SIT Testing','UAT Testing','Perf Testing','IAM Testing','MINS','FIRST','IAM Questionnaire','SDLC Process','Prod Build'];
@@ -818,7 +897,7 @@ const SCORECARD = {
   '19':   ['56/56','54/54','36/40','0/0','0/0','30/30','1/1','0/57','N/A','0/0'],
   '21.4': ['1/1','1/1','1/1','1/1','0/1','0/0','0/0','0/0','N/A','1/1'],
   '22.3': ['7/7','7/7','7/7','1/1','1/2','4/4','1/1','0/6','N/A','1/1'],
-  '24.4': ['137/137','118/118','109/110','0/0','24/24','137/137','137/137','137/137','N/A','0/0'],
+  '24.4': ['137/137','118/118','109/110','0/0','23/23','137/137','137/137','137/137','N/A','0/0'],
   '30.2': ['14/14','11/11','0/0','0/0','0/2','0/0','0/0','0/5','N/A','0/9'],
 };
 
@@ -826,26 +905,25 @@ const ISSUES_SUMMARY = {
   '19':   { total:4,  open:4, closed:0, critical:0, blocker:0, high:3, medium:1, low:0 },
   '21.4': { total:0,  open:0, closed:0, critical:0, blocker:0, high:0, medium:0, low:0 },
   '22.3': { total:0,  open:0, closed:0, critical:0, blocker:0, high:0, medium:0, low:0 },
-  '24.4': { total:3,  open:3, closed:0, critical:0, blocker:0, high:3, medium:0, low:0 },
+  '24.4': { total:2,  open:2, closed:0, critical:0, blocker:0, high:2, medium:0, low:0 },
   '30.2': { total:1,  open:1, closed:0, critical:0, blocker:1, high:0, medium:0, low:0 },
 };
 
 const ISSUES_DETAIL = {
   '19': [
-    { num:5683, priority:'High',    status:'Resolution In Progress', category:'Application',         name:'Conflicting disposition',                              owner:'Olubusola Tejuoso', followup:'03/27/2026', overdue:'⚠ 3d'  },
-    { num:5209, priority:'High',    status:'Resolution In Progress', category:'Application',         name:'Archer and BCDR not completed',                        owner:'Alpesh Rambiya',    followup:'03/19/2026', overdue:'⚠ 11d' },
-    { num:5615, priority:'High',    status:'Resolution In Progress', category:'Cutover Event - Move EAI', name:'CR1165-Move to COE 14.1',                         owner:'Karen Kelly',       followup:'03/20/2026', overdue:'⚠ 10d' },
-    { num:5653, priority:'Medium',  status:'Issue Identified',       category:'Cutover - Scope',     name:'DR Activity for FPAD',                                 owner:'Jake Munz',         followup:'04/10/2026', overdue:'—'     },
+    { num:5683, priority:'High',    status:'Resolution In Progress', category:'Application',              name:'Conflicting disposition',                               owner:'Olubusola Tejuoso',  followup:'03/27/2026', overdue:'⚠ 3d'  },
+    { num:5209, priority:'High',    status:'Resolution In Progress', category:'Application',              name:'Archer and BCDR not completed',                         owner:'Alpesh Rambiya',     followup:'03/19/2026', overdue:'⚠ 11d' },
+    { num:5615, priority:'High',    status:'Resolution In Progress', category:'Cutover Event - Move EAI', name:'CR1165-Move to COE 14.1',                               owner:'Karen Kelly',        followup:'03/20/2026', overdue:'⚠ 10d' },
+    { num:5653, priority:'Medium',  status:'Issue Identified',       category:'Cutover - Scope',          name:'DR Activity for FPAD',                                  owner:'Jake Munz',          followup:'04/10/2026', overdue:'—'     },
   ],
   '21.4': [],
   '22.3': [],
   '24.4': [
-    { num:4293, priority:'High',    status:'Resolution In Progress', category:'Access',              name:'CMQT Roles being used by Vendors with Hard Tokens',    owner:'Corey Allert',      followup:'03/11/2026', overdue:'⚠ 19d' },
-    { num:5731, priority:'High',    status:'Resolution In Progress', category:'Cutover Event - Move EAI', name:'CR1189-Remove EAI 3535527 from 24.4 COE',         owner:'—',                 followup:'03/30/2026', overdue:'⚠ 0d'  },
-    { num:5944, priority:'High',    status:'Issue Identified',       category:'Template',            name:'Add App Level Activity for ETL and Batch requirements', owner:'John Wick',         followup:'04/03/2026', overdue:'—'     },
+    { num:4293, priority:'High',    status:'Resolution In Progress', category:'Access',                   name:'CMQT Roles being used by Vendors with Hard Tokens',     owner:'satish dintakurti',  followup:'04/01/2026', overdue:'—'     },
+    { num:5944, priority:'High',    status:'Issue Identified',       category:'Template',                 name:'Add App Level Activity for ETL and Batch requirements',  owner:'John Wick',          followup:'04/03/2026', overdue:'—'     },
   ],
   '30.2': [
-    { num:5972, priority:'Blocker', status:'Issue Identified',       category:'Access',              name:'Unable to access github repos for migration',          owner:'—',                 followup:'03/27/2026', overdue:'⚠ 3d'  },
+    { num:5972, priority:'Blocker', status:'Issue Identified',       category:'Access',                   name:'Unable to access github repos for migration',           owner:'—',                  followup:'03/27/2026', overdue:'⚠ 3d'  },
   ],
 };
 
@@ -864,6 +942,100 @@ const CHECKLIST_TASKS = [
 // ── HELPERS ─────────────────────────────────────────────────────────────────
 function ragClass(rag) {
   return { 'Complete':'rag-complete','On Track':'rag-on-track','At Risk':'rag-at-risk','Behind':'rag-behind' }[rag] || 'rag-on-track';
+}
+
+function ragColor(rag) {
+  return { 'Complete':'var(--green)','On Track':'var(--green)','At Risk':'var(--amber)','Behind':'var(--red)' }[rag] || 'var(--green)';
+}
+
+// Unified RAG calc — used for both overall and activity category
+function calcRag(cutoverStr, pctComp, pctAnt, variance) {
+  const cutover = new Date(cutoverStr + 'T00:00:00');
+  if (pctComp >= 100 && pctAnt >= 100) return 'Complete';
+  if (cutover <= TODAY && pctComp < 100) return 'Behind';
+  if (variance >= -5)  return 'On Track';
+  if (variance >= -25) return 'At Risk';
+  return 'Behind';
+}
+
+// Issues RAG: Blocker → Red, Critical → Amber, else Green
+function issuesRag(waveKey) {
+  const i = ISSUES_SUMMARY[waveKey];
+  if (!i || i.open === 0) return 'On Track';
+  if (i.blocker > 0)  return 'Behind';
+  if (i.critical > 0) return 'At Risk';
+  return 'On Track';
+}
+
+// Checklist RAG: 100% of past-due items checked → Green, else Red
+function checklistRag(waveKey) {
+  const wave = WAVES.find(w => w.key === waveKey);
+  const checked = getChecked(waveKey);
+  const pastDue = CHECKLIST_TASKS.filter(t => {
+    const due = addDays(wave.cutover, t.tOffset);
+    const stat = dueStat(due);
+    return stat.cls === 'overdue' || stat.cls === 'past';
+  });
+  if (pastDue.length === 0) return 'On Track'; // nothing due yet
+  const doneCount = pastDue.filter(t => checked[t.id]).length;
+  return doneCount === pastDue.length ? 'On Track' : 'Behind';
+}
+
+// Scorecard RAG: checks phase gates against T-10 / T-20 thresholds
+function scorecardRag(waveKey) {
+  const wave = WAVES.find(w => w.key === waveKey);
+  const cutover = new Date(wave.cutover + 'T00:00:00');
+  const daysToGo = Math.round((cutover - TODAY) / 86400000); // positive = days until cutover
+
+  // Check if any applicable phase is incomplete
+  const phases = SCORECARD[waveKey];
+  const anyIncomplete = phases.some(v => {
+    if (v === 'N/A') return false;
+    const [n, d] = v.split('/').map(s => parseInt(s.trim()));
+    if (isNaN(n) || isNaN(d) || d === 0) return false; // 0/0 = N/A, skip
+    return n < d;
+  });
+
+  if (!anyIncomplete) return 'On Track'; // all complete → green
+  if (daysToGo <= 10)  return 'Behind';  // past T-10 with incomplete → red
+  if (daysToGo <= 20)  return 'At Risk'; // between T-20 and T-11 → amber
+  return 'On Track';                      // more than 20 days out → green
+}
+
+// Overall RAG: composite across all categories
+function overallRag(waveKey) {
+  const wave = WAVES.find(w => w.key === waveKey);
+  const cutover = new Date(wave.cutover + 'T00:00:00');
+  const c = COMPLETION[waveKey];
+  const i = ISSUES_SUMMARY[waveKey];
+  const subj = getSubjective(waveKey);
+
+  // Rule 1: cutover passed AND not fully clean → always Red
+  // (clean = 100% complete, no open issues, subjective not red)
+  const pastCutover = cutover <= TODAY;
+  const fullyComplete = c.pctComp >= 100;
+  const noOpenIssues = !i || i.open === 0;
+  if (pastCutover && (!fullyComplete || !noOpenIssues) && subj !== 'green') return 'Behind';
+
+  // Rule 2: Subjective overrides everything
+  if (subj === 'red')   return 'Behind';
+  if (subj === 'amber') return 'At Risk';
+  if (subj === 'green') return 'On Track';
+
+  // Rule 3: Issues Red (blocker) → Red
+  const iRag = issuesRag(waveKey);
+  if (iRag === 'Behind') return 'Behind';
+
+  // Rule 4: Issues Amber (critical) OR Activities Amber → Amber
+  const actRag = calcRag(wave.cutover, c.pctComp, c.pctAnt, c.variance);
+  if (iRag === 'At Risk' || actRag === 'At Risk') return 'At Risk';
+
+  // Rule 5 & 6: EAI Scorecard
+  const scRag = scorecardRag(waveKey);
+  if (scRag === 'Behind')  return 'Behind';
+  if (scRag === 'At Risk') return 'At Risk';
+
+  return 'On Track';
 }
 
 function scColor(val) {
@@ -913,47 +1085,40 @@ function showSection(id) {
   event.target.classList.add('active');
 }
 
+// ── RAG FILTER ────────────────────────────────────────────────────────────────
+let activeFilter = null;
+
+function filterByRag(rag) {
+  activeFilter = rag;
+  const clearBtn = document.getElementById('filter-clear');
+  if (clearBtn) clearBtn.style.display = rag ? 'inline-block' : 'none';
+  buildOverview();
+  buildCompletionBars();
+}
+
+function waveVisible(waveKey) {
+  if (!activeFilter) return true;
+  const rag = overallRag(waveKey);
+  if (activeFilter === 'On Track') return rag === 'On Track' || rag === 'Complete';
+  return rag === activeFilter;
+}
+
 // ── OVERVIEW ─────────────────────────────────────────────────────────────────
+function catRagClass(rag) {
+  if (rag === 'On Track' || rag === 'Complete') return 'crp-green';
+  if (rag === 'At Risk') return 'crp-amber';
+  if (rag === 'Behind')  return 'crp-red';
+  return 'crp-grey';
+}
+
+function catRagDot(rag) {
+  if (rag === 'On Track' || rag === 'Complete') return '●';
+  if (rag === 'At Risk') return '●';
+  if (rag === 'Behind')  return '●';
+  return '○';
+}
+
 function buildOverview() {
-  const rows = document.getElementById('overview-rows');
-  WAVES.forEach(w => {
-    const c = COMPLETION[w.key];
-    const pct = c.pctComp;
-    const ant = c.pctAnt;
-    const varSign = c.variance >= 0 ? '+' : '';
-    const ragCls  = ragClass(c.rag);
-    const pctColor = { 'Complete':'var(--green)','On Track':'var(--blue)','At Risk':'var(--amber)','Behind':'var(--red)' }[c.rag];
-    const antColor = 'rgba(255,255,255,0.35)';
-
-    rows.innerHTML += `
-      <div class="wave-summary-row">
-        <div>
-          <div class="wave-row-name">${w.name}</div>
-          <div class="wave-row-date">Cutover: ${new Date(w.cutover+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
-        </div>
-        <div class="dual-bar-wrap">
-          <div class="dual-bar-row">
-            <span class="dual-bar-label" style="color:${pctColor}">Actual</span>
-            <div class="dual-bar-track">
-              <div class="dual-bar-fill" style="width:${Math.min(pct,100)}%;background:${pctColor}"></div>
-            </div>
-            <span class="dual-bar-pct" style="color:${pctColor}">${pct.toFixed(1)}%</span>
-          </div>
-          <div class="dual-bar-row">
-            <span class="dual-bar-label" style="color:var(--muted)">Anticipated</span>
-            <div class="dual-bar-track ant-track">
-              <div class="dual-bar-ant-fill" style="width:${Math.min(ant,100)}%"></div>
-            </div>
-            <span class="dual-bar-pct" style="color:var(--muted)">${ant.toFixed(1)}%</span>
-          </div>
-        </div>
-        <div style="text-align:right;min-width:80px">
-          <div style="font-family:'DM Mono',monospace;font-size:12px;color:${c.variance>=0?'var(--green)':'var(--red)'};margin-bottom:4px">${varSign}${c.variance.toFixed(2)}pp</div>
-          <span class="rag ${ragCls}">${c.rag}</span>
-        </div>
-      </div>`;
-  });
-
   // Summary stats
   const total = WAVES.reduce((a,w) => a + COMPLETION[w.key].total, 0);
   const done  = WAVES.reduce((a,w) => a + COMPLETION[w.key].completed, 0);
@@ -982,9 +1147,96 @@ function buildOverview() {
       <div class="stat-value" style="color:var(--red)">${lateActs}</div>
       <div class="stat-sub">across all waves</div>
     </div>`;
+
+  // ── Category RAG table ──
+  const tbl = document.getElementById('cat-rag-table');
+  let html = `<thead><tr>
+    <th>COE/Wave</th>
+    <th>Overall</th>
+    <th>Issues</th>
+    <th>Activities</th>
+    <th>Team Checklist</th>
+    <th>EAI Scorecard</th>
+    <th>Subjective</th>
+  </tr></thead><tbody>`;
+
+  WAVES.forEach(w => {
+    const c = COMPLETION[w.key];
+    const actRag  = calcRag(w.cutover, c.pctComp, c.pctAnt, c.variance);
+    const issRag  = issuesRag(w.key);
+    const ovRag   = overallRag(w.key);
+    const subj    = getSubjective(w.key);
+    const subjCls = subj ? (subj==='green'?'crp-green':subj==='amber'?'crp-amber':'crp-red') : 'crp-grey';
+    const subjLabel = subj ? (subj==='green'?'On Track':subj==='amber'?'At Risk':'Behind') : '—';
+    if (!waveVisible(w.key)) return;
+
+    html += `<tr>
+      <td style="font-weight:600;font-size:13px">${w.name}</td>
+      <td style="width:48px;padding:8px">
+        <div style="width:36px;height:36px;border-radius:6px;margin:auto;background:${ovRag==='Behind'?'var(--red)':ovRag==='At Risk'?'var(--amber)':'var(--green)'}"></div>
+      </td>
+      <td><span class="cat-rag-pill ${catRagClass(issRag)}">${catRagDot(issRag)} ${issRag}</span></td>
+      <td><span class="cat-rag-pill ${catRagClass(actRag)}">${catRagDot(actRag)} ${actRag}</span></td>
+      <td><span class="cat-rag-pill ${catRagClass(checklistRag(w.key))}">${catRagDot(checklistRag(w.key))} ${checklistRag(w.key)}</span></td>
+      <td><span class="cat-rag-pill ${catRagClass(scorecardRag(w.key))}">${catRagDot(scorecardRag(w.key))} ${scorecardRag(w.key)}</span></td>
+      <td>
+        <div class="subj-btn-group">
+          <button class="subj-btn ${subj==='green'?'active-green':''}" onclick="setSubjective('${w.key}','green')">G</button>
+          <button class="subj-btn ${subj==='amber'?'active-amber':''}" onclick="setSubjective('${w.key}','amber')">A</button>
+          <button class="subj-btn ${subj==='red'?'active-red':''}"   onclick="setSubjective('${w.key}','red')">R</button>
+          ${subj ? `<button class="subj-btn" onclick="setSubjective('${w.key}',null)" title="Clear">✕</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  });
+
+  html += '</tbody>';
+  tbl.innerHTML = html;
 }
 
 // ── ACTIVITY BREAKDOWN ────────────────────────────────────────────────────────
+function buildCompletionBars() {
+  const rows = document.getElementById('overview-rows');
+  rows.innerHTML = '';
+  WAVES.forEach(w => {
+    const c = COMPLETION[w.key];
+    const pct = c.pctComp;
+    const ant = c.pctAnt;
+    const varSign = c.variance >= 0 ? '+' : '';
+    const rag = overallRag(w.key);
+    const ragCls = ragClass(rag);
+    const pctColor = ragColor(rag);
+    if (!waveVisible(w.key)) return;
+    rows.innerHTML += `
+      <div class="wave-summary-row">
+        <div>
+          <div class="wave-row-name">${w.name}</div>
+          <div class="wave-row-date">Cutover: ${new Date(w.cutover+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+        </div>
+        <div class="dual-bar-wrap">
+          <div class="dual-bar-row">
+            <span class="dual-bar-label" style="color:${pctColor}">Actual</span>
+            <div class="dual-bar-track">
+              <div class="dual-bar-fill" style="width:${Math.min(pct,100)}%;background:${pctColor}"></div>
+            </div>
+            <span class="dual-bar-pct" style="color:${pctColor}">${pct.toFixed(1)}%</span>
+          </div>
+          <div class="dual-bar-row">
+            <span class="dual-bar-label" style="color:var(--muted)">Anticipated</span>
+            <div class="dual-bar-track ant-track">
+              <div class="dual-bar-ant-fill" style="width:${Math.min(ant,100)}%"></div>
+            </div>
+            <span class="dual-bar-pct" style="color:var(--muted)">${ant.toFixed(1)}%</span>
+          </div>
+        </div>
+        <div style="text-align:right;min-width:80px">
+          <div style="font-family:'DM Mono',monospace;font-size:12px;color:${c.variance>=0?'var(--green)':'var(--red)'};margin-bottom:4px">${varSign}${c.variance.toFixed(2)}pp</div>
+          <span class="rag ${ragCls}">${rag}</span>
+        </div>
+      </div>`;
+  });
+}
+
 let actWave = '19';
 function buildActivityPills() {
   const el = document.getElementById('activity-pills');
@@ -1236,6 +1488,7 @@ if (localStorage.getItem('spog-theme') === 'light') {
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 buildOverview();
+buildCompletionBars();
 buildActivityPills();
 renderActivity();
 buildScorecard();
