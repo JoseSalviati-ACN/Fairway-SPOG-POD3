@@ -736,6 +736,34 @@
   .subj-btn.active-amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
   .subj-btn.active-red   { background: var(--red-bg);   color: var(--red);   border-color: var(--red-border); }
 
+  /* ── COE/Wave Insights ── */
+  .ins-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+  .ins-card-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+  .ins-card-header.u-critical { border-left: 4px solid #e53e3e; }
+  .ins-card-header.u-high     { border-left: 4px solid #dd6b20; }
+  .ins-card-header.u-medium   { border-left: 4px solid #d69e2e; }
+  .ins-card-header.u-low      { border-left: 4px solid #38a169; }
+  .ins-wave-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--text); flex: 1; }
+  .ins-meta { display: flex; gap: 8px; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
+  .ins-tschedule { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); background: var(--surface2); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border2); }
+  .ins-urgency { font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.04em; }
+  .ins-urgency.u-critical { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-border); }
+  .ins-urgency.u-high     { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .ins-urgency.u-medium   { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .ins-urgency.u-low      { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .ins-concerns { padding: 12px 18px; display: flex; flex-direction: column; gap: 10px; }
+  .ins-concern { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .ins-concern-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .ins-items { display: flex; flex-direction: column; }
+  .ins-item { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; align-items: baseline; gap: 6px; line-height: 1.5; }
+  .ins-item:last-child { border-bottom: none; }
+  .ins-item-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .ins-dot-red   { background: var(--red); }
+  .ins-dot-amber { background: var(--amber); }
+  .ins-dot-muted { background: var(--muted); }
+  .ins-no-concerns { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--green); padding: 14px 18px; }
+  .ins-empty { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted); padding: 40px; text-align: center; }
+
   /* ── Responsive ── */
   @media (max-width: 900px) {
     .grid-4 { grid-template-columns: 1fr 1fr; }
@@ -773,6 +801,7 @@
   <button class="nav-tab" onclick="showSection('scorecard')">EAI Scorecard</button>
   <button class="nav-tab" onclick="showSection('issues')">Issues</button>
   <button class="nav-tab" onclick="showSection('checklist')">Team Checklist</button>
+  <button class="nav-tab" onclick="showSection('insights')">COE/Wave Insights</button>
   <button class="nav-tab" onclick="showSection('chat')">Ask the SPOG</button>
 </nav>
 
@@ -823,6 +852,13 @@
   <div class="section" id="section-checklist">
     <div class="wave-pills" id="checklist-pills"></div>
     <div id="checklist-content"></div>
+  </div>
+
+  <!-- ══ COE/WAVE INSIGHTS ══ -->
+  <div class="section" id="section-insights">
+    <div class="section-heading">COE/Wave Insights</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:20px;font-family:'DM Mono',monospace">Top concerns per active wave, sorted by urgency. Complete waves are excluded. Concern level scales with proximity to cutover date.</p>
+    <div id="insights-body"></div>
   </div>
 
   <!-- ══ ASK THE SPOG ══ -->
@@ -1002,40 +1038,49 @@ function scorecardRag(waveKey) {
   return 'On Track';                      // more than 20 days out → green
 }
 
-// Overall RAG: composite across all categories
+// Overall RAG: column-driven rules
 function overallRag(waveKey) {
+  const c = COMPLETION[waveKey];
   const wave = WAVES.find(w => w.key === waveKey);
   const cutover = new Date(wave.cutover + 'T00:00:00');
-  const c = COMPLETION[waveKey];
+
+  // Rule 1: 100% activities complete → always Green
+  if (c.pctComp >= 100) return 'On Track';
+
+  // Rule 2: any blocker issue → always Red, hard stop
   const i = ISSUES_SUMMARY[waveKey];
+  if (i && i.blocker > 0) return 'Behind';
+
+  // Rule 3: past cutover with any open activities → always Red, hard stop
+  if (cutover <= TODAY && c.pctComp < 100) return 'Behind';
+
+  // Gather the 5 column RAGs
+  const cols = [
+    issuesRag(waveKey),
+    calcRag(wave.cutover, c.pctComp, c.pctAnt, c.variance),
+    checklistRag(waveKey),
+    scorecardRag(waveKey),
+  ];
+  // Subjective overrides EAI Scorecard if set
   const subj = getSubjective(waveKey);
+  const subjRag = subj === 'red' ? 'Behind' : subj === 'amber' ? 'At Risk' : subj === 'green' ? 'On Track' : null;
+  if (subjRag) cols[3] = subjRag;
 
-  // Rule 1: cutover passed AND not fully clean → always Red
-  // (clean = 100% complete, no open issues, subjective not red)
-  const pastCutover = cutover <= TODAY;
-  const fullyComplete = c.pctComp >= 100;
-  const noOpenIssues = !i || i.open === 0;
-  if (pastCutover && (!fullyComplete || !noOpenIssues) && subj !== 'green') return 'Behind';
+  const hasRed   = cols.some(r => r === 'Behind');
+  const hasAmber = cols.some(r => r === 'At Risk');
+  const hasGreen = cols.some(r => r === 'On Track' || r === 'Complete');
 
-  // Rule 2: Subjective overrides everything
-  if (subj === 'red')   return 'Behind';
-  if (subj === 'amber') return 'At Risk';
-  if (subj === 'green') return 'On Track';
+  // Rule 4: all green → Green
+  if (!hasRed && !hasAmber) return 'On Track';
 
-  // Rule 3: Issues Red (blocker) → Red
-  const iRag = issuesRag(waveKey);
-  if (iRag === 'Behind') return 'Behind';
+  // Rule 5: any amber → Amber
+  if (hasAmber) return 'At Risk';
 
-  // Rule 4: Issues Amber (critical) OR Activities Amber → Amber
-  const actRag = calcRag(wave.cutover, c.pctComp, c.pctAnt, c.variance);
-  if (iRag === 'At Risk' || actRag === 'At Risk') return 'At Risk';
+  // Rule 6: mix of green and red → Amber
+  if (hasRed && hasGreen) return 'At Risk';
 
-  // Rule 5 & 6: EAI Scorecard
-  const scRag = scorecardRag(waveKey);
-  if (scRag === 'Behind')  return 'Behind';
-  if (scRag === 'At Risk') return 'At Risk';
-
-  return 'On Track';
+  // Rule 7: all red or red with no green → Red
+  return 'Behind';
 }
 
 function scColor(val) {
@@ -1083,6 +1128,7 @@ function showSection(id) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('section-' + id).classList.add('active');
   event.target.classList.add('active');
+  if (id === 'insights' && !insightsBuilt) buildInsights();
 }
 
 // ── RAG FILTER ────────────────────────────────────────────────────────────────
@@ -1092,8 +1138,10 @@ function filterByRag(rag) {
   activeFilter = rag;
   const clearBtn = document.getElementById('filter-clear');
   if (clearBtn) clearBtn.style.display = rag ? 'inline-block' : 'none';
+  insightsBuilt = false;
   buildOverview();
   buildCompletionBars();
+  if (document.getElementById('section-insights').classList.contains('active')) buildInsights();
 }
 
 function waveVisible(waveKey) {
@@ -1470,6 +1518,152 @@ function toggleCheck(taskId, el) {
   const isChecked = el.classList.contains('checked');
   setChecked(waveKey, taskId, !isChecked);
   renderChecklist();
+}
+
+// ── COE/WAVE INSIGHTS ────────────────────────────────────────────────────────
+let insightsBuilt = false;
+
+function urgencyInfo(daysToGo) {
+  if (daysToGo <= 10)  return { cls: 'u-critical', label: '🔴 Critical urgency',      showHigh: true  };
+  if (daysToGo <= 20)  return { cls: 'u-high',     label: '🟠 High urgency',           showHigh: true  };
+  if (daysToGo <= 35)  return { cls: 'u-medium',   label: '🟡 Moderate urgency',       showHigh: true  };
+  if (daysToGo <= 60)  return { cls: 'u-low',      label: '🟡 Mild-moderate urgency',  showHigh: false };
+  return                       { cls: 'u-low',      label: '🟢 Mild concern',           showHigh: false };
+}
+
+function tScheduleLabel(daysToGo) {
+  if (isNaN(daysToGo)) return 'TBD';
+  if (daysToGo === 0)  return 'T-0';
+  if (daysToGo > 0)   return `T-${daysToGo}`;
+  return `T+${Math.abs(daysToGo)}`;
+}
+
+function buildInsights() {
+  insightsBuilt = true;
+  const el = document.getElementById('insights-body');
+  el.innerHTML = '';
+
+  // Sort waves numerically by wave key (19, 21.4, 22.3, 24.4, 30.2)
+  const sorted = [...WAVES]
+    .filter(w => {
+      if (!waveVisible(w.key)) return false;
+      if (COMPLETION[w.key].pctComp >= 100) return false;
+      return true;
+    })
+    .sort((a, b) => parseFloat(a.key) - parseFloat(b.key));
+
+  if (sorted.length === 0) {
+    el.innerHTML = '<div class="ins-empty">No active waves with concerns — all waves complete or filtered out.</div>';
+    return;
+  }
+
+  sorted.forEach(w => {
+    const c    = COMPLETION[w.key];
+    const iss  = ISSUES_SUMMARY[w.key];
+    const issD = ISSUES_DETAIL[w.key] || [];
+    const ovRag = overallRag(w.key);
+    const cutover = new Date(w.cutover + 'T00:00:00');
+    const daysToGo = Math.round((cutover - TODAY) / 86400000);
+    const urg = urgencyInfo(daysToGo);
+    const tLabel = tScheduleLabel(daysToGo);
+    const ragCls = ragClass(ovRag);
+
+    // ── Concern 1: Issues ──
+    let issuesConcern = '';
+    const blockers  = issD.filter(i => i.priority === 'Blocker');
+    const criticals = issD.filter(i => i.priority === 'Critical');
+    const highs     = issD.filter(i => i.priority === 'High');
+
+    let issueItems = [];
+    if (blockers.length > 0) {
+      issueItems = blockers.slice(0, 3).map(i =>
+        `<div class="ins-item"><div class="ins-item-dot ins-dot-red"></div><span>${i.overdue !== '—' ? '⚠ ' : ''}${i.name} — Owner: ${i.owner}</span></div>`
+      );
+    } else if (criticals.length > 0) {
+      issueItems = criticals.slice(0, 3).map(i =>
+        `<div class="ins-item"><div class="ins-item-dot ins-dot-red"></div><span>${i.overdue !== '—' ? '⚠ ' : ''}${i.name} — Owner: ${i.owner}</span></div>`
+      );
+    } else if (highs.length > 0 && urg.showHigh) {
+      issueItems = highs.slice(0, 3).map(i =>
+        `<div class="ins-item"><div class="ins-item-dot ins-dot-amber"></div><span>${i.overdue !== '—' ? '⚠ ' : ''}${i.name} — Owner: ${i.owner}</span></div>`
+      );
+    }
+
+    if (issueItems.length > 0) {
+      const priorityLabel = blockers.length > 0 ? `Blockers (${blockers.length})` :
+                            criticals.length > 0 ? `Critical Issues (${criticals.length})` :
+                            `High Priority Issues (${highs.length})`;
+      issuesConcern = `
+        <div class="ins-concern">
+          <div class="ins-concern-title"><span>⚠</span> ${priorityLabel}</div>
+          <div class="ins-items">${issueItems.join('')}</div>
+        </div>`;
+    }
+
+    // ── Concern 2: Activities ──
+    let activitiesConcern = '';
+    const actRag = calcRag(w.cutover, c.pctComp, c.pctAnt, c.variance);
+    if (actRag === 'At Risk' || actRag === 'Behind') {
+      const remaining = c.total - c.completed;
+      const varSign = c.variance >= 0 ? '+' : '';
+      activitiesConcern = `
+        <div class="ins-concern">
+          <div class="ins-concern-title"><span>⏱</span> Activities ${actRag === 'Behind' ? 'Behind' : 'At Risk'} — ${c.pctComp.toFixed(1)}% complete, ${varSign}${c.variance.toFixed(1)}pp variance</div>
+          <div class="ins-items">
+            <div class="ins-item"><div class="ins-item-dot ins-dot-red"></div><span>${c.late} late incomplete activities</span></div>
+            <div class="ins-item"><div class="ins-item-dot ins-dot-amber"></div><span>${ACTIVITY[w.key].pending} activities still Pending</span></div>
+            <div class="ins-item"><div class="ins-item-dot ins-dot-muted"></div><span>${remaining} total activities remaining</span></div>
+          </div>
+        </div>`;
+    }
+
+    // ── Concern 3: Scorecard phase gates ──
+    let scorecardConcern = '';
+    const phases = SCORECARD[w.key];
+    const phaseNames = ['Dev Build','SIT Testing','UAT Testing','Perf Testing','IAM Testing','MINS','FIRST','IAM Questionnaire','SDLC Process','Prod Build'];
+    const incompletePhases = phases
+      .map((v, i) => {
+        if (v === 'N/A') return null;
+        const parts = v.replace(/\s/g,'').split('/');
+        if (parts.length !== 2) return null;
+        const n = parseInt(parts[0]), d = parseInt(parts[1]);
+        if (isNaN(n) || isNaN(d) || d === 0) return null;
+        if (n === d) return null;
+        return { name: phaseNames[i], complete: n, total: d, remaining: d - n };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.remaining - a.remaining)
+      .slice(0, 3);
+
+    if (incompletePhases.length > 0) {
+      const items = incompletePhases.map(p =>
+        `<div class="ins-item"><div class="ins-item-dot ins-dot-amber"></div><span>${p.name}: ${p.remaining} incomplete (${p.complete}/${p.total} complete)</span></div>`
+      );
+      scorecardConcern = `
+        <div class="ins-concern">
+          <div class="ins-concern-title"><span>▣</span> Scorecard: ${incompletePhases.length} phase gate${incompletePhases.length > 1 ? 's' : ''} with incomplete apps</div>
+          <div class="ins-items">${items.join('')}</div>
+        </div>`;
+    }
+
+    const hasConcerns = issuesConcern || activitiesConcern || scorecardConcern;
+
+    el.innerHTML += `
+      <div class="ins-card">
+        <div class="ins-card-header ${urg.cls}">
+          <div class="ins-wave-name">${w.name}<span style="font-family:'DM Mono',monospace;font-weight:400;font-size:11px;color:var(--muted);margin-left:8px">${w.full.split('—')[1]?.trim() || ''}</span></div>
+          <div class="ins-meta">
+            <span class="ins-tschedule">${tLabel}</span>
+            <span class="rag ${ragCls}">${ovRag}</span>
+            <span class="ins-urgency ${urg.cls}">${urg.label}</span>
+          </div>
+        </div>
+        ${hasConcerns
+          ? `<div class="ins-concerns">${issuesConcern}${activitiesConcern}${scorecardConcern}</div>`
+          : `<div class="ins-no-concerns">✓ No critical concerns identified for this wave.</div>`
+        }
+      </div>`;
+  });
 }
 
 // ── THEME TOGGLE ──────────────────────────────────────────────────────────────
