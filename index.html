@@ -780,7 +780,7 @@
   <div class="header-left">
     <span class="header-eyebrow">Project Fairway · FedEx Freight Separation</span>
     <span class="header-title">Pod 3 COE/Wave SPOG</span>
-    <span class="header-date">As of March 31, 2026  8:00 AM CT</span>
+    <span class="header-date">As of April 01, 2026  8:00 AM CT</span>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
     <span class="rag rag-complete" style="cursor:pointer" onclick="filterByRag('On Track')" title="Filter: On Track">Complete</span>
@@ -894,7 +894,7 @@
 
 <script>
 // ── DATA ────────────────────────────────────────────────────────────────────
-const TODAY = new Date('2026-03-31');
+const TODAY = new Date('2026-04-01');
 
 const WAVES = [
   { key:'19',   name:'COE/Wave 19',   full:'19 — Commercial / Convey Paper Event',        cutover:'2026-03-07' },
@@ -905,11 +905,11 @@ const WAVES = [
 ];
 
 const COMPLETION = {
-  '19':   { completed:545,  total:547,  pctComp:99.63, pctAnt:100.00, variance:-0.37, rag:'Behind',    late:2,   notLate:0   },
-  '21.4': { completed:38,   total:38,   pctComp:100.00,pctAnt:100.00, variance:0.00,  rag:'Complete',  late:0,   notLate:0   },
-  '22.3': { completed:148,  total:148,  pctComp:100.00,pctAnt:100.00, variance:0.00,  rag:'Complete',  late:0,   notLate:0   },
-  '24.4': { completed:1470, total:1786, pctComp:82.31, pctAnt:65.70,  variance:16.60, rag:'On Track',  late:124, notLate:192 },
-  '30.2': { completed:118,  total:303,  pctComp:38.94, pctAnt:25.70,  variance:13.20, rag:'On Track',  late:24,  notLate:161 },
+  '19':   { completed:538,  total:538,  pctComp:100.00, pctAnt:100.00, variance:0.00,  rag:'Complete',  late:0,   notLate:0   },
+  '21.4': { completed:38,   total:38,   pctComp:100.00, pctAnt:100.00, variance:0.00,  rag:'Complete',  late:0,   notLate:0   },
+  '22.3': { completed:148,  total:148,  pctComp:100.00, pctAnt:100.00, variance:0.00,  rag:'Complete',  late:0,   notLate:0   },
+  '24.4': { completed:1474, total:1758, pctComp:83.85,  pctAnt:71.43,  variance:12.42, rag:'On Track',  late:116, notLate:168 },
+  '30.2': { completed:128,  total:301,  pctComp:42.52,  pctAnt:28.57,  variance:13.95, rag:'On Track',  late:33,  notLate:140 },
 };
 
 function getSubjective(waveKey) {
@@ -921,11 +921,11 @@ function setSubjective(waveKey, val) {
 }
 
 const ACTIVITY = {
-  '19':   { completed:545,  active:1, ready:1,   pending:0,   total:547  },
+  '19':   { completed:538,  active:0, ready:0,   pending:0,   total:538  },
   '21.4': { completed:38,   active:0, ready:0,   pending:0,   total:38   },
   '22.3': { completed:148,  active:0, ready:0,   pending:0,   total:148  },
-  '24.4': { completed:1470, active:7, ready:153, pending:156, total:1786 },
-  '30.2': { completed:118,  active:2, ready:57,  pending:126, total:303  },
+  '24.4': { completed:1474, active:3, ready:137, pending:144, total:1758 },
+  '30.2': { completed:128,  active:1, ready:54,  pending:118, total:301  },
 };
 
 const SC_PHASES = ['Dev Build','SIT Testing','UAT Testing','Perf Testing','IAM Testing','MINS','FIRST','IAM Questionnaire','SDLC Process','Prod Build'];
@@ -933,12 +933,12 @@ const SCORECARD = {
   '19':   ['56/56','53/53','36/39','0/0','0/0','29/29','1/1','0/56','3/52','0/0'],
   '21.4': ['1/1','1/1','1/1','1/1','0/1','0/0','0/0','0/0','1/1','1/1'],
   '22.3': ['7/7','7/7','7/7','1/1','1/2','4/4','1/1','0/6','7/7','1/1'],
-  '24.4': ['137/137','118/119','109/110','0/1','24/26','47/47','5/5','0/137','74/137','0/1'],
+  '24.4': ['137/137','118/119','110/110','0/1','24/26','47/47','5/5','0/137','99/137','0/1'],
   '30.2': ['14/14','11/11','0/0','0/0','0/2','0/0','0/0','0/5','10/14','0/9'],
 };
 
 const ISSUES_SUMMARY = {
-  '19':   { total:2,  open:2, closed:0, critical:0, blocker:0, high:2, medium:0, low:0 },
+  '19':   { total:1,  open:1, closed:0, critical:0, blocker:0, high:1, medium:0, low:0 },
   '21.4': { total:0,  open:0, closed:0, critical:0, blocker:0, high:0, medium:0, low:0 },
   '22.3': { total:0,  open:0, closed:0, critical:0, blocker:0, high:0, medium:0, low:0 },
   '24.4': { total:2,  open:2, closed:0, critical:0, blocker:0, high:2, medium:0, low:0 },
@@ -947,17 +947,16 @@ const ISSUES_SUMMARY = {
 
 const ISSUES_DETAIL = {
   '19': [
-    { num:5209, priority:'High',    status:'Resolution In Progress', category:'Application',              name:'Archer and BCDR not completed',                         owner:'Alpesh Rambiya',     followup:'03/19/2026', overdue:'⚠ 12d' },
-    { num:5615, priority:'High',    status:'Resolution In Progress', category:'Cutover Event - Move EAI', name:'CR1165-Move to COE 14.1',                               owner:'Karen Kelly',        followup:'03/20/2026', overdue:'⚠ 11d' },
+    { num:5615, priority:'High',    status:'Resolution In Progress', category:'Cutover Event - Move EAI', name:'CR1165-Move to COE 14.1',                               owner:'Karen Kelly',        followup:'03/20/2026', overdue:'⚠ 12d' },
   ],
   '21.4': [],
   '22.3': [],
   '24.4': [
-    { num:4293, priority:'High',    status:'Resolution In Progress', category:'Access',                   name:'CMQT Roles being used by Vendors with Hard Tokens',     owner:'satish dintakurti',  followup:'04/01/2026', overdue:'—'     },
+    { num:4293, priority:'High',    status:'Resolution In Progress', category:'Access',                   name:'CMQT Roles being used by Vendors with Hard Tokens',     owner:'satish dintakurti',  followup:'04/01/2026', overdue:'⚠ 0d'  },
     { num:5944, priority:'High',    status:'Issue Identified',       category:'Template',                 name:'Add App Level Activity for ETL and Batch requirements',  owner:'John Wick',          followup:'04/03/2026', overdue:'—'     },
   ],
   '30.2': [
-    { num:5972, priority:'Blocker', status:'Issue Identified',       category:'Access',                   name:'Unable to access github repos for migration',           owner:'—',                  followup:'03/27/2026', overdue:'⚠ 4d'  },
+    { num:5972, priority:'Blocker', status:'Issue Identified',       category:'Access',                   name:'Unable to access github repos for migration',           owner:'—',                  followup:'03/27/2026', overdue:'⚠ 5d'  },
   ],
 };
 
@@ -1691,50 +1690,47 @@ buildChecklistPills();
 renderChecklist();
 
 // ── ASK THE SPOG CHATBOT ──────────────────────────────────────────────────────
-const SPOG_SYSTEM_PROMPT = `You are an expert assistant for the Pod 3 migration team on Project Fairway, a FedEx Freight (FXF) separation program at Accenture. You have deep knowledge of all wave data in the Pod 3 SPOG (Single Pane of Glass) report as of March 31, 2026 at 8:00 AM CT.
+const SPOG_SYSTEM_PROMPT = `You are an expert assistant for the Pod 3 migration team on Project Fairway, a FedEx Freight (FXF) separation program at Accenture. You have deep knowledge of all wave data in the Pod 3 SPOG (Single Pane of Glass) report as of April 01, 2026 at 8:00 AM CT.
 
 Answer questions concisely and accurately using only the data below. Use bullet points for lists. Bold key names or numbers.
 
-== WAVE COMPLETION (as of Mar 31, 2026) ==
-- COE/Wave 19 (cutover Mar 7, 2026): 545/547 complete = 99.63% actual vs 100% anticipated. Variance: -0.37pp. Status: BEHIND (cutover passed, not 100%).
-- COE/Wave 21.4 (cutover Mar 19, 2026): 38/38 = 100% complete. Status: COMPLETE.
-- COE/Wave 22.3 (cutover Mar 21, 2026): 148/148 = 100% complete. Status: COMPLETE.
-- COE/Wave 24.4 (cutover Apr 11, 2026): 1470/1786 = 82.31% actual vs 65.70% anticipated. Variance: +16.60pp. Status: ON TRACK.
-- COE/Wave 30.2 (cutover Apr 26, 2026): 118/303 = 38.94% actual vs 25.70% anticipated. Variance: +13.20pp. Status: ON TRACK.
+== WAVE COMPLETION (as of Apr 1, 2026) ==
+- COE/Wave 19 (cutover Mar 7, 2026): 538/538 = 100% complete. Status: COMPLETE. ✅
+- COE/Wave 21.4 (cutover Mar 19, 2026): 38/38 = 100% complete. Status: COMPLETE. ✅
+- COE/Wave 22.3 (cutover Mar 21, 2026): 148/148 = 100% complete. Status: COMPLETE. ✅
+- COE/Wave 24.4 (cutover Apr 11, 2026 — T-10): 1474/1758 = 83.85% actual vs 71.43% anticipated. Variance: +12.42pp. Status: ON TRACK.
+- COE/Wave 30.2 (cutover Apr 26, 2026 — T-25): 128/301 = 42.52% actual vs 28.57% anticipated. Variance: +13.95pp. Status: ON TRACK.
 
 == ACTIVITY STATUS BREAKDOWN ==
-Wave 19:   Completed=545, Active=1, Ready=1,   Pending=0,   Total=547,  Late=2,   Not Late (incomplete)=0
-Wave 21.4: Completed=38,  Active=0, Ready=0,   Pending=0,   Total=38,   Late=0,   Not Late=0
-Wave 22.3: Completed=148, Active=0, Ready=0,   Pending=0,   Total=148,  Late=0,   Not Late=0
-Wave 24.4: Completed=1470,Active=7, Ready=153, Pending=156, Total=1786, Late=124, Not Late (incomplete)=192
-Wave 30.2: Completed=118, Active=2, Ready=57,  Pending=126, Total=303,  Late=24,  Not Late (incomplete)=161
+Wave 19:   Completed=538, Active=0, Ready=0, Pending=0, Total=538, Late=0, Not Late=0
+Wave 21.4: Completed=38,  Active=0, Ready=0, Pending=0, Total=38,  Late=0, Not Late=0
+Wave 22.3: Completed=148, Active=0, Ready=0, Pending=0, Total=148, Late=0, Not Late=0
+Wave 24.4: Completed=1474,Active=3, Ready=137,Pending=144,Total=1758,Late=116,Not Late=168
+Wave 30.2: Completed=128, Active=1, Ready=54, Pending=118,Total=301, Late=33, Not Late=140
 
-== EAI READINESS SCORECARD (sourced from ScorecardReport; excludes pure-retain apps from Wave 24.4) ==
+== EAI READINESS SCORECARD (excludes 54 pure-retain apps from Wave 24.4; denominator=137) ==
 Wave 19:   Dev Build=56/56, SIT=53/53, UAT=36/39, Perf=0/0, IAM=0/0, MINS=29/29, FIRST=1/1, IAM Questionnaire=0/56, SDLC=3/52, Prod Build=0/0
-Wave 21.4: Dev Build=1/1,   SIT=1/1,   UAT=1/1,   Perf=1/1, IAM=0/1, MINS=0/0,   FIRST=0/0, IAM Questionnaire=0/0,  SDLC=1/1,  Prod Build=1/1
-Wave 22.3: Dev Build=7/7,   SIT=7/7,   UAT=7/7,   Perf=1/1, IAM=1/2, MINS=4/4,   FIRST=1/1, IAM Questionnaire=0/6,  SDLC=7/7,  Prod Build=1/1
-Wave 24.4: Dev Build=137/137,SIT=118/119,UAT=109/110,Perf=0/1,IAM=24/26,MINS=47/47,FIRST=5/5,IAM Questionnaire=0/137,SDLC=74/137,Prod Build=0/1
-Wave 30.2: Dev Build=14/14, SIT=11/11, UAT=0/0,   Perf=0/0, IAM=0/2, MINS=0/0,   FIRST=0/0, IAM Questionnaire=0/5,  SDLC=10/14,Prod Build=0/9
+Wave 21.4: Dev Build=1/1,   SIT=1/1,   UAT=1/1,   Perf=1/1, IAM=0/1, MINS=0/0,   FIRST=0/0,  IAM Questionnaire=0/0,  SDLC=1/1,  Prod Build=1/1
+Wave 22.3: Dev Build=7/7,   SIT=7/7,   UAT=7/7,   Perf=1/1, IAM=1/2, MINS=4/4,   FIRST=1/1,  IAM Questionnaire=0/6,  SDLC=7/7,  Prod Build=1/1
+Wave 24.4: Dev Build=137/137,SIT=118/119,UAT=110/110,Perf=0/1,IAM=24/26,MINS=47/47,FIRST=5/5,IAM Questionnaire=0/137,SDLC=99/137,Prod Build=0/1
+Wave 30.2: Dev Build=14/14, SIT=11/11, UAT=0/0,   Perf=0/0, IAM=0/2, MINS=0/0,   FIRST=0/0,  IAM Questionnaire=0/5,  SDLC=10/14,Prod Build=0/9
 
 == OPEN ISSUES ==
-Wave 19 (2 open — 2 High):
-  #5209 High | Archer and BCDR not completed | Owner: Alpesh Rambiya | Follow-up: 03/19/2026 | Overdue 12d
-  #5615 High | CR1165-Move to COE 14.1 | Owner: Karen Kelly | Follow-up: 03/20/2026 | Overdue 11d
+Wave 19 (1 open — 1 High): [NOTE: Issues #5683 and #5653 moved to "No Wave" in myNav]
+  #5615 High | CR1165-Move to COE 14.1 | Owner: Karen Kelly | Follow-up: 03/20/2026 | Overdue 12d
 
 Wave 21.4: No open issues.
 Wave 22.3: No open issues.
 
 Wave 24.4 (2 open — 2 High):
-  #4293 High | CMQT Roles being used by Vendors with Hard Tokens | Owner: satish dintakurti | Follow-up: 04/01/2026
+  #4293 High | CMQT Roles being used by Vendors with Hard Tokens | Owner: satish dintakurti | Follow-up: 04/01/2026 | Due TODAY ⚠
   #5944 High | Add App Level Activity for ETL and Batch requirements | Owner: John Wick | Follow-up: 04/03/2026
 
 Wave 30.2 (1 open — 1 Blocker):
-  #5972 Blocker | Unable to access github repos for migration | Owner: unassigned | Follow-up: 03/27/2026 | Overdue 4d
+  #5972 Blocker | Unable to access github repos for migration | Owner: unassigned | Follow-up: 03/27/2026 | Overdue 5d
 
-== NOTABLE CHANGES FROM MAR 30 ==
-- Wave 19: Issues #5683 and #5653 closed/removed — now 2 open (was 4).
-- Wave 24.4: 7 fewer completions (1470 vs 1477), scorecard MINS dropped to 47/47 (was 137/137), FIRST to 5/5 (was 137/137) — likely scorecard methodology/scope change.
-- Wave 30.2: Anticipated % updated to 25.70% (was 22.86%), variance now +13.20pp (was +16.75pp).
+== WAVE APP COUNTS ==
+Wave 24.4 scorecard tracks 137 non-retain apps (191 total minus 54 pure-retain). 19 mixed-approach apps kept in scope.
 
 Respond in a helpful, direct tone. If asked something outside the data above, say you don't have that information in the current SPOG snapshot.`;
 
